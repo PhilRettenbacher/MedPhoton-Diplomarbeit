@@ -57,11 +57,12 @@ while True:
       newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
 
       # undistort
-      dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
+      mapx, mapy = cv2.initUndistortRectifyMap(mtx, dist, None, newcameramtx, (w, h), 5)
+      dst = cv2.remap(img, mapx, mapy, cv2.INTER_LINEAR)
 
       # crop the image
       x, y, w, h = roi
-      #dst = dst[y:y + h, x:x + w]
+      dst = dst[y:y + h, x:x + w]
       cv2.imshow('calibresult.png', dst)
 
     #cv2.waitKey(500)
