@@ -1,9 +1,10 @@
 from stereovision import calibration
 from ImagingApi import ImagingApi
+import keyboard
 import os
 import cv2
 
-cam = ImagingApi.CameraApi(False, (1,2))
+cam = ImagingApi.CameraApi(True, (1,2))
 
 calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData")
 mindisparity = 2
@@ -11,8 +12,9 @@ numdisparites = 64
 blocksize = 15
 specklerange = 12
 specklewindowsize = 2
-while True:
+mode = "mindisparity"
 
+while True:
     left_image, right_image = cam.getPicture()
 
     left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
@@ -36,10 +38,41 @@ while True:
     cv2.imshow('Ja', disparity / 1024.)
     cv2.waitKey(1)
 
-    if cv2.waitKey(10) == 32:
-        blocksize+=10
+    if keyboard.is_pressed('1'):
+        mindisparity += 1
+        print ("mindisparity: " + str(mindisparity))
+    if keyboard.is_pressed('2'):
+        mindisparity -= 1
+        print ("mindisparity: " + str(mindisparity))
 
-    print(blocksize)
+    if keyboard.is_pressed('3'):
+        numdisparites += 1
+        print ("numdisparites: " + str(numdisparites))
+    if keyboard.is_pressed('4'):
+        numdisparites -= 1
+        print ("numdisparites: " + str(numdisparites))
+
+    if keyboard.is_pressed('5'):
+        blocksize += 1
+        print ("blocksize: " + str(blocksize))
+    if keyboard.is_pressed('6'):
+        blocksize -= 1
+        print ("blocksize: " + str(blocksize))
+
+    if keyboard.is_pressed('7'):
+        specklerange += 1
+        print ("specklerange: " + str(specklerange))
+    if keyboard.is_pressed('8'):
+        specklerange -= 1
+        print ("specklerange: " + str(specklerange))
+
+    if keyboard.is_pressed('9'):
+        specklewindowsize += 1
+        print ("specklewindowsize: " + str(specklewindowsize))
+    if keyboard.is_pressed('0'):
+        specklewindowsize -= 1
+        print ("specklewindowsize: " + str(specklewindowsize))
+
 
 #disparity = block_matcher.compute(rectified_pair[0], rectified_pair[1])
 
