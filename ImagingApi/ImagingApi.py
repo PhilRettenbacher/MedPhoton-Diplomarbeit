@@ -1,4 +1,5 @@
 import cv2;
+import urllib.request;
 
 class CameraApi:
     def __init__(self, useWeb, id):
@@ -31,7 +32,7 @@ class CameraApi:
         cv2.imshow("Image1", frame)
         cv2.imshow("Image2", frame2)
 
-        cv2.waitKey(3000)
+        cv2.waitKey(1)
 
     def videoStream(self):
         while (True):
@@ -43,3 +44,21 @@ class CameraApi:
         self.cap1.release()
         self.cap2.release()
         cv2.destroyAllWindows()
+
+    def setActive(self,id,enabled):
+        try:
+            if enabled:
+                print("Try to restart cam ...")
+                with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/restart') as response:
+                    html = response.read()
+            else:
+                print("Try to quit cam ...")
+                with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/quit') as response:
+                    html = response.read()
+        except:
+            TGREEN = '\033[31m'
+            print(TGREEN + "Website can't be reached!")
+        else:
+            TGREEN = '\033[32m'
+            print(TGREEN + "Success!!")
+
