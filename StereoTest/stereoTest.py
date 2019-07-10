@@ -9,12 +9,11 @@ picture1, picture2 = cam.getPicture()
 
 calibrator = calibration.StereoCalibrator(8, 6, 3, (picture1.shape[0],picture1.shape[1]));
 
-for x in range(10):
-
+for x in range(30):
     calibrator.add_corners((picture1, picture2));
     picture1, picture2 = cam.getPicture()
     print("Picture_"+str(x)+" taken")
-    cv2.waitKey(1000)
+    cv2.waitKey(2000)
 
 calibration = calibrator.calibrate_cameras()
 
