@@ -11,6 +11,8 @@ class CameraApi:
             print("Initialize Camera locally");
             self.cap1 = cv2.VideoCapture(id[0], cv2.CAP_DSHOW);
             self.cap2 = cv2.VideoCapture(id[1], cv2.CAP_DSHOW);
+            if(not self.cap1.isOpened() or not self.cap2.isOpened()):
+                print("Cameras could not be initialized!");
 
     def writePicture(self):
         ret, frame = self.cap1.read()
