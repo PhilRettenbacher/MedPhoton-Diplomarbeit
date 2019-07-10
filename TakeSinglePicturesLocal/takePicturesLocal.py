@@ -7,14 +7,14 @@ cap = cv2.VideoCapture(webcamID, cv2.CAP_DSHOW);
 
 counter = 0;
 
-alpha = 3
-beta = -150
+alpha = 1
+beta = 0
 
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
 
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     cv2.convertScaleAbs(frame, frame, alpha, beta);
 
