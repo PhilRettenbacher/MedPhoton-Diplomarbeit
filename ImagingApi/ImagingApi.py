@@ -4,19 +4,36 @@ import urllib.request;
 class CameraApi:
     def __init__(self, useWeb, id):
 
-        if(useWeb):
+        self.useWeb = useWeb
+        self.id = id
+
+        self.init()
+
+
+
+    def init(self):
+        if(self.useWeb):
             print("Initialize Camera in Web");
-            self.cap1 = cv2.VideoCapture('http://192.168.199.3:808' + str(id[0]) + '/')
-            self.cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(id[1]) + '/')
+            self.cap1 = cv2.VideoCapture('http://192.168.199.3:808' + str(self.id[0]) + '/')
+            self.cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(self.id[1]) + '/')
         else:
             print("Initialize Camera locally");
-            self.cap1 = cv2.VideoCapture(id[0], cv2.CAP_DSHOW);
-            self.cap2 = cv2.VideoCapture(id[1], cv2.CAP_DSHOW);
+            self.cap1 = cv2.VideoCapture(self.id[0], cv2.CAP_DSHOW);
+            self.cap2 = cv2.VideoCapture(self.id[1], cv2.CAP_DSHOW);
             if(not self.cap1.isOpened() or not self.cap2.isOpened()):
                 print("Cameras could not be initialized!");
-                exit(0)
-
+                self.enabled = False
+                return
+        self.enabled = True
+        
+    def checkEnabled(self):
+        if not self.enabled:
+            print("Cameras are not enabled/working/attached")
+        return self.enabled
     def writePicture(self):
+        if not self.checkEnabled():
+            return
+
         ret, frame = self.cap1.read()
         ret2, frame2 = self.cap2.read()
 
@@ -24,12 +41,18 @@ class CameraApi:
         cv2.imwrite("image_2.jpg", frame2)
 
     def getPicture(self):
+        if not self.checkEnabled():
+            return
+
         ret, frame = self.cap1.read()
         ret2, frame2 = self.cap2.read()
 
         return (frame, frame2)
 
     def showPicture(self, waitTime):
+        if not self.checkEnabled():
+            return
+
         frame, frame2 = self.getPicture()
 
         cv2.imshow("Image1", frame)
@@ -38,6 +61,9 @@ class CameraApi:
         cv2.waitKey(waitTime)
 
     def videoStream(self):
+        if not self.checkEnabled():
+            return
+
         while (True):
             self.showPicture(1)
             if cv2.waitKey(1) == 27:
@@ -64,5 +90,6 @@ class CameraApi:
         else:
             TGREEN = '\033[32m'
             print(TGREEN + "Success!!")
+        self.init()
 
 
