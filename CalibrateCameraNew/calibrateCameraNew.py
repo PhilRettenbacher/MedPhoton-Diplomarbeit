@@ -38,7 +38,7 @@ for fname in images:
 
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
-        img = cv2.imread('Cam1Footage/image_1.jpg')
+        img = cv2.imread('Cam1Footage/image_4.jpg')
 
         h, w = img.shape[:2]
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
