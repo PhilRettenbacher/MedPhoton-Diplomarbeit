@@ -38,7 +38,7 @@ class CameraApi:
 
     def videoStream(self):
         while (True):
-            self.showPicture(0)
+            self.showPicture(1)
             if cv2.waitKey(1) == 27:
              break
 
