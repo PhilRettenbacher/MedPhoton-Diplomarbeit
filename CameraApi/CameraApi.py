@@ -1,3 +1,5 @@
 class CameraApi:
 
-    i = 123
+    def takePicture(self):
+                
+
