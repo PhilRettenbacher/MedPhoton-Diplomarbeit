@@ -6,7 +6,6 @@ webcamID = 1;
 cap = cv2.VideoCapture(webcamID, cv2.CAP_DSHOW);
 
 counter = 0;
-
 alpha = 1
 beta = 0
 
@@ -19,7 +18,7 @@ while(True):
     cv2.convertScaleAbs(frame, frame, alpha, beta);
 
     # Display the resulting frame
-    cv2.imshow('frame',frame)
+    cv2.imshow('frame', frame)
 
     if cv2.waitKey(1) == 32:
         print("Image taken")

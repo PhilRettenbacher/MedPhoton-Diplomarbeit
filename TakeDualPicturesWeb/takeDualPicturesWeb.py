@@ -1,8 +1,12 @@
-import cv2;
+import cv2
+from ImagingApi import ImagingApi
 import numpy as np;
+
 #The onboard webcam usually has the id 0
 webcamID = 2;
 webcamID2 = 1;
+
+cam = ImagingApi.CameraApi(True, (1,2))
 
 cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
 cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID2) + '/')
@@ -14,14 +18,12 @@ if not cap2.isOpened():
     raise Exception("Could not open video device")
 
 counter = 0;
-
 alpha = 3
 beta = -150
 
 while(True):
     # Capture frame-by-frame
-    ret, frame = cap.read()
-    ret, frame2 = cap2.read()
+    [frame, frame2] = cam.getPicture()
 
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
@@ -47,7 +49,4 @@ while(True):
     if cv2.waitKey(1) == 27:
         break
 
-# When everything done, release the capture
-cap.release()
-cap2.release()
-cv2.destroyAllWindows()
+cam.__del__()
