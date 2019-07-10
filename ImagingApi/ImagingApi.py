@@ -35,6 +35,12 @@ class CameraApi:
 
         cv2.waitKey(3000)
 
+    def videoStream(self):
+        while (True):
+            self.showPicture()
+            if cv2.waitKey(1) == 27:
+             break
+
     def __del__(self):
         self.cap1.release()
         self.cap2.release()
