@@ -25,6 +25,14 @@ class CameraApi:
 
         return (frame, frame2)
 
+    def showPicture(self):
+        frame, frame2 = self.getPicture()
+
+        cv2.imshow("Image1", frame)
+        cv2.imshow("Image2", frame2)
+
+        cv2.waitKey(3000)
+
     def __del__(self):
         self.cap1.release()
         self.cap2.release()
