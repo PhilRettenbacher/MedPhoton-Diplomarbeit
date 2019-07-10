@@ -35,8 +35,8 @@ axis = np.float32([[0,0,0], [0,3,0], [3,3,0], [3,0,0],
 while (True):
     ret, gray = cap.read()
     gray = cv2.cvtColor(gray,cv2.COLOR_BGR2GRAY)
+
     ret, corners = cv2.findChessboardCorners(gray, (8,6),None)
-    #cv2.imshow('ha', gray)
 
     if ret == True:
          corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
