@@ -13,6 +13,7 @@ class CameraApi:
             self.cap2 = cv2.VideoCapture(id[1], cv2.CAP_DSHOW);
             if(not self.cap1.isOpened() or not self.cap2.isOpened()):
                 print("Cameras could not be initialized!");
+                exit(0)
 
     def writePicture(self):
         ret, frame = self.cap1.read()
@@ -27,17 +28,17 @@ class CameraApi:
 
         return (frame, frame2)
 
-    def showPicture(self):
+    def showPicture(self, waitTime):
         frame, frame2 = self.getPicture()
 
         cv2.imshow("Image1", frame)
         cv2.imshow("Image2", frame2)
 
-        cv2.waitKey(3000)
+        cv2.waitKey(waitTime)
 
     def videoStream(self):
         while (True):
-            self.showPicture()
+            self.showPicture(0)
             if cv2.waitKey(1) == 27:
              break
 
