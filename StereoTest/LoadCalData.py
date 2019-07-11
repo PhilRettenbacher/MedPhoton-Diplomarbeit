@@ -11,8 +11,6 @@ calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData"
 
 cam = ImagingApi.CameraApi(False, (1,0))
 
-
-
 left_image, right_image = cam.getPicture()
 
 #left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
