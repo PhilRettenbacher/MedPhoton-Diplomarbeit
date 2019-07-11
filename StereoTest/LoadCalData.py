@@ -3,10 +3,9 @@ from ImagingApi import ImagingApi
 import keyboard
 from stereovision.ui_utils import BMTuner
 from stereovision.blockmatchers import StereoSGBM
+from stereovision import point_cloud
 import os
 import cv2
-
-cam = ImagingApi.CameraApi(True, (1,2))
 
 calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData")
 mindisparity = 2
@@ -15,8 +14,6 @@ blocksize = 15
 specklerange = 12
 specklewindowsize = 2
 mode = "mindisparity"
-
-
 
 left_image, right_image = cam.getPicture()
 
@@ -32,6 +29,7 @@ block_matcher.setBlockSize(blocksize)
 block_matcher.setSpeckleRange(specklerange)
 block_matcher.setSpeckleWindowSize(specklewindowsize)
 rectified_pair = calib_loaded.rectify((left_image, right_image))
+rectified_pair = calib_loaded.rectify((right_image, left_image))
 
 cv2.imshow("1",rectified_pair[0])
 cv2.imshow("2",rectified_pair[1])
