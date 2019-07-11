@@ -1,10 +1,4 @@
 from ImagingApi import ImagingApi
 
-cam = ImagingApi.CameraApi(True, (1,2))
-cam.writePicture()
-
-
-
-
-
-
+cam = ImagingApi.CameraApi(True, (1, 2))
+cam.restartCams()
