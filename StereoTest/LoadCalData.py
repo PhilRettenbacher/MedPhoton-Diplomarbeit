@@ -1,6 +1,6 @@
 from stereovision import calibration
 from ImagingApi import ImagingApi
-from sklearn.preprocessing import normalize
+#from sklearn.preprocessing import normalize
 from stereovision.ui_utils import BMTuner
 from stereovision.blockmatchers import StereoSGBM
 import os
@@ -9,7 +9,7 @@ import numpy as np
 
 calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData")
 
-cam = ImagingApi.CameraApi(False, (1,0))
+cam = ImagingApi.CameraApi(True, (1, 2))
 
 
 
@@ -68,5 +68,6 @@ filteredImg = wls_filter.filter(displ, left_image, None, dispr)  # important to 
 filteredImg = cv2.normalize(src=filteredImg, dst=filteredImg, beta=0, alpha=255, norm_type=cv2.NORM_MINMAX);
 filteredImg = np.uint8(filteredImg)
 cv2.imshow('Disparity Map', filteredImg)
+cv2.imwrite('DisparityMap.jpg', filteredImg)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
