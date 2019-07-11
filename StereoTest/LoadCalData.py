@@ -15,13 +15,13 @@ specklerange = 12
 specklewindowsize = 2
 mode = "mindisparity"
 
+cam = ImagingApi.CameraApi(True, (1,2))
 left_image, right_image = cam.getPicture()
 
 left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
 right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
 
 block_matcher = cv2.StereoBM_create(numDisparities=16, blockSize=15)
-
 
 block_matcher.setMinDisparity(mindisparity)
 block_matcher.setNumDisparities(numdisparites)

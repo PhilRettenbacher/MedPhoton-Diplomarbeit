@@ -22,8 +22,8 @@ while(True):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     cv2.convertScaleAbs(frame, frame, alpha, beta);
     cv2.imwrite("image.jpg", frame)
-
     cv2.namedWindow('image')
+
     cv2.setMouseCallback('image', printBrightness)
     cv2.imshow('image', frame)
 
