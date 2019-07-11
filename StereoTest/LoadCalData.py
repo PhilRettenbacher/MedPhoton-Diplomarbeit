@@ -44,44 +44,44 @@ tuner = BMTuner(block_matcher, calib_loaded, rectified_pair)
 #cv2.imshow('Ja', disparity / 1024.)
 cv2.waitKey(1)
 
-    def format_coord(x, y):
-        return "text_string_made_from({:.2f},{:.2f})".format(x, y)
-    cv2.format_coord = format_coord
+def format_coord(x, y):
+    return "text_string_made_from({:.2f},{:.2f})".format(x, y)
+cv2.format_coord = format_coord
 
-    if keyboard.is_pressed('1'):
-        mindisparity += 1
-        print ("mindisparity: " + str(mindisparity))
-    if keyboard.is_pressed('2'):
-        mindisparity -= 1
-        print ("mindisparity: " + str(mindisparity))
+if keyboard.is_pressed('1'):
+    mindisparity += 1
+    print ("mindisparity: " + str(mindisparity))
+if keyboard.is_pressed('2'):
+    mindisparity -= 1
+    print ("mindisparity: " + str(mindisparity))
 
-    if keyboard.is_pressed('3'):
-        numdisparites += 1
-        print ("numdisparites: " + str(numdisparites))
-    if keyboard.is_pressed('4'):
-        numdisparites -= 1
-        print ("numdisparites: " + str(numdisparites))
+if keyboard.is_pressed('3'):
+    numdisparites += 1
+    print ("numdisparites: " + str(numdisparites))
+if keyboard.is_pressed('4'):
+    numdisparites -= 1
+    print ("numdisparites: " + str(numdisparites))
 
-    if keyboard.is_pressed('5'):
-        blocksize += 1
-        print ("blocksize: " + str(blocksize))
-    if keyboard.is_pressed('6'):
-        blocksize -= 1
-        print ("blocksize: " + str(blocksize))
+if keyboard.is_pressed('5'):
+    blocksize += 1
+    print ("blocksize: " + str(blocksize))
+if keyboard.is_pressed('6'):
+    blocksize -= 1
+    print ("blocksize: " + str(blocksize))
 
-    if keyboard.is_pressed('7'):
-        specklerange += 1
-        print ("specklerange: " + str(specklerange))
-    if keyboard.is_pressed('8'):
-        specklerange -= 1
-        print ("specklerange: " + str(specklerange))
+if keyboard.is_pressed('7'):
+    specklerange += 1
+    print ("specklerange: " + str(specklerange))
+if keyboard.is_pressed('8'):
+    specklerange -= 1
+    print ("specklerange: " + str(specklerange))
 
-    if keyboard.is_pressed('9'):
-        specklewindowsize += 1
-        print ("specklewindowsize: " + str(specklewindowsize))
-    if keyboard.is_pressed('0'):
-        specklewindowsize -= 1
-        print ("specklewindowsize: " + str(specklewindowsize))
+if keyboard.is_pressed('9'):
+    specklewindowsize += 1
+    print ("specklewindowsize: " + str(specklewindowsize))
+if keyboard.is_pressed('0'):
+    specklewindowsize -= 1
+    print ("specklewindowsize: " + str(specklewindowsize))
 
 
 #disparity = block_matcher.compute(rectified_pair[0], rectified_pair[1])
