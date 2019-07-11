@@ -1,5 +1,6 @@
 import cv2;
 import urllib.request;
+import time
 
 class CameraApi:
     def __init__(self, useWeb, id):
@@ -9,15 +10,17 @@ class CameraApi:
 
         self.init()
 
-
-
     def init(self):
         if(self.useWeb):
-            print("Initialize Camera in Web");
+            print("Initialize Camera in Web ...");
             self.cap1 = cv2.VideoCapture('http://192.168.199.3:808' + str(self.id[0]) + '/')
             self.cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(self.id[1]) + '/')
+            if(not self.cap1.isOpened() or not self.cap2.isOpened()):
+                print("Cameras could not be initialized!");
+                self.enabled = False
+                return
         else:
-            print("Initialize Camera locally");
+            print("Initialize Camera locally ...");
             self.cap1 = cv2.VideoCapture(self.id[0], cv2.CAP_DSHOW);
             self.cap2 = cv2.VideoCapture(self.id[1], cv2.CAP_DSHOW);
             if(not self.cap1.isOpened() or not self.cap2.isOpened()):
@@ -77,11 +80,9 @@ class CameraApi:
     def setActive(self,id,enabled):
         try:
             if enabled:
-                print("Try to restart cam ...")
                 with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/restart') as response:
                     html = response.read()
             else:
-                print("Try to quit cam ...")
                 with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/quit') as response:
                     html = response.read()
         except:
@@ -89,12 +90,21 @@ class CameraApi:
             print(TRED + "Website can't be reached!")
         else:
             TGREEN = '\033[32m'
-            print(TGREEN + "Success!!")
+            print(TGREEN + "Camera restarted/quitted")
         self.init()
 
-    def getBrightness(self):
-        print ("test")
-        return
+    def restartCams(self):
+        self.setActive(1, True)
+        self.setActive(2, True)
+
+    def quitCams(self):
+        self.setActive(1, False)
+        self.setActive(2, False)
+
+    def rebootCams(self):
+        self.quitCams()
+        time.sleep(5)
+        self.restartCams()
 
 
 
