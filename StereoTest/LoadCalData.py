@@ -1,6 +1,7 @@
 from stereovision import calibration
 from ImagingApi import ImagingApi
 from stereovision.ui_utils import BMTuner
+from stereovision.blockmatchers import StereoSGBM
 import os
 import cv2
 
@@ -20,12 +21,12 @@ rectified_pair = calib_loaded.rectify((left_image, right_image))
 cv2.imshow("1",rectified_pair[0])
 cv2.imshow("2",rectified_pair[1])
 
-block_matcher = cv2.StereoSGBM_create()
+block_matcher = StereoSGBM()
 
 tuner = BMTuner(block_matcher, calib_loaded, rectified_pair)
 
-disparity = block_matcher.compute(rectified_pair[0],rectified_pair[1])
-cv2.imshow('Ja', disparity / 1024.)
+#disparity = block_matcher.compute(rectified_pair[0],rectified_pair[1])
+#cv2.imshow('Ja', disparity / 1024.)
 cv2.waitKey(1)
 
 
