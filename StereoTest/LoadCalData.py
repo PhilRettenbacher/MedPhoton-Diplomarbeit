@@ -1,6 +1,8 @@
 from stereovision import calibration
 from ImagingApi import ImagingApi
 import keyboard
+from stereovision.ui_utils import BMTuner
+from stereovision.blockmatchers import StereoSGBM
 import os
 import cv2
 
@@ -14,29 +16,33 @@ specklerange = 12
 specklewindowsize = 2
 mode = "mindisparity"
 
-while True:
-    left_image, right_image = cam.getPicture()
-
-    left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
-    right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
-
-    rectified_pair = calib_loaded.rectify((left_image, right_image))
-
-    cv2.imshow("1",rectified_pair[0])
-    cv2.imshow("2",rectified_pair[1])
-
-    block_matcher = cv2.StereoBM_create(numDisparities=16, blockSize=15)
 
 
-    block_matcher.setMinDisparity(mindisparity)
-    block_matcher.setNumDisparities(numdisparites)
-    block_matcher.setBlockSize(blocksize)
-    block_matcher.setSpeckleRange(specklerange)
-    block_matcher.setSpeckleWindowSize(specklewindowsize)
+left_image, right_image = cam.getPicture()
 
-    disparity = block_matcher.compute(rectified_pair[0],rectified_pair[1])
-    cv2.imshow('Ja', disparity / 1024.)
-    cv2.waitKey(1)
+left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
+right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
+
+block_matcher = cv2.StereoBM_create(numDisparities=16, blockSize=15)
+
+
+block_matcher.setMinDisparity(mindisparity)
+block_matcher.setNumDisparities(numdisparites)
+block_matcher.setBlockSize(blocksize)
+block_matcher.setSpeckleRange(specklerange)
+block_matcher.setSpeckleWindowSize(specklewindowsize)
+rectified_pair = calib_loaded.rectify((left_image, right_image))
+
+cv2.imshow("1",rectified_pair[0])
+cv2.imshow("2",rectified_pair[1])
+
+block_matcher = StereoSGBM()
+
+tuner = BMTuner(block_matcher, calib_loaded, rectified_pair)
+
+#disparity = block_matcher.compute(rectified_pair[0],rectified_pair[1])
+#cv2.imshow('Ja', disparity / 1024.)
+cv2.waitKey(1)
 
     def format_coord(x, y):
         return "text_string_made_from({:.2f},{:.2f})".format(x, y)
