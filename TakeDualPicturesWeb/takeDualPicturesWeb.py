@@ -35,6 +35,10 @@ while(True):
     cv2.imshow('frame',frame)
     cv2.imshow('frame2', frame2)
 
+    lv_x = frame.winfo_rootx()
+    lv_y = frame.winfo_rooty()
+    print (lv_x, lv_y)
+
     if cv2.waitKey(1) == 32:
         #Right Cam
         cv2.imwrite("image_R_"+str(counter)+".jpg", frame);

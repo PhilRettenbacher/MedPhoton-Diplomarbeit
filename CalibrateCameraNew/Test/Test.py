@@ -1,8 +1,7 @@
 from ImagingApi import ImagingApi
 
-cam = ImagingApi.CameraApi(False, (1,2))
-
-cam.videoStream()
+cam = ImagingApi.CameraApi(True, (1,2))
+cam.writePicture()
 
 
 

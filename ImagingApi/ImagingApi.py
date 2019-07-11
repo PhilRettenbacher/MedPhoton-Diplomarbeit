@@ -85,11 +85,16 @@ class CameraApi:
                 with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/quit') as response:
                     html = response.read()
         except:
-            TGREEN = '\033[31m'
-            print(TGREEN + "Website can't be reached!")
+            TRED = '\033[31m'
+            print(TRED + "Website can't be reached!")
         else:
             TGREEN = '\033[32m'
             print(TGREEN + "Success!!")
         self.init()
+
+    def getBrightness(self):
+        print ("test")
+        return
+
 
 
