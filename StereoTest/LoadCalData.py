@@ -38,6 +38,10 @@ while True:
     cv2.imshow('Ja', disparity / 1024.)
     cv2.waitKey(1)
 
+    def format_coord(x, y):
+        return "text_string_made_from({:.2f},{:.2f})".format(x, y)
+    cv2.format_coord = format_coord
+
     if keyboard.is_pressed('1'):
         mindisparity += 1
         print ("mindisparity: " + str(mindisparity))
