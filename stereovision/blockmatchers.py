@@ -205,7 +205,7 @@ class StereoSGBM(BlockMatcher):
 
     parameter_maxima = {"minDisparity": None,
                         "numDisparities": None,
-                        "SADWindowSize": 11,
+                        "SADWindowSize": 110,
                         "P1": None,
                         "P2": None,
                         "disp12MaxDiff": None,
