@@ -60,7 +60,7 @@ print (all_3d_points[0].shape)
 
 print (all_right_corners[0].reshape(-1,2)[0])
 
-retval, _, _, _, _, R, T, E, F=cv2.stereoCalibrate(all_3d_points, all_left_corners, all_right_corners, mtx,dist,mtx, dist,(im.shape[0],im.shape[0]), flags=cv2.CALIB_FIX_INTRINSIC)
+retval, _, _, _, _, R, T, E, F=cv2.stereoCalibrate(all_3d_points, all_left_corners, all_right_corners, mtx,dist,mtx, dist,(im.shape[1],im.shape[0]), flags=cv2.CALIB_FIX_INTRINSIC)
 
 selected_image=2
 left_im=cv2.imread("TestImgData/left%02d.jpg"%valid_idxs[selected_image])

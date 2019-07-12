@@ -71,7 +71,7 @@ print("Mean Reprojection Error Left: " + str(retL))
 retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(_3d_points, _2d_points_R, (imRight.shape[1],imRight.shape[0]), None, None)
 print("Mean Reprojection Error Right: " + str(retR))
 
-retval, _, _, _, _, R, T, E, F=cv2.stereoCalibrate(_3d_points, _2d_points_L, _2d_points_R, mtxL,distL,mtxR, distR,(imLeft.shape[0],imLeft.shape[0]), flags=cv2.CALIB_FIX_INTRINSIC)
+retval, _, _, _, _, R, T, E, F=cv2.stereoCalibrate(_3d_points, _2d_points_L, _2d_points_R, mtxL,distL,mtxR, distR,(imLeft.shape[1],imLeft.shape[0]), flags=cv2.CALIB_FIX_INTRINSIC)
 
 print(retval)
 selected_image = 10
@@ -145,8 +145,8 @@ for i in range(0, out.shape[0], 30):
     cv2.line(out, (0, i), (out.shape[1], i), (0, 255, 255), 3)
 
 plt.figure(figsize=(10, 4))
-#plt.imshow(out[..., ::-1])
-#plt.show()
+plt.imshow(out[..., ::-1])
+plt.show()
 
 im_left_remapped = cv2.cvtColor(im_left_remapped, cv2.COLOR_BGR2GRAY)
 im_right_remapped = cv2.cvtColor(im_right_remapped, cv2.COLOR_BGR2GRAY)
@@ -154,10 +154,9 @@ im_right_remapped = cv2.cvtColor(im_right_remapped, cv2.COLOR_BGR2GRAY)
 stereo = cv2.StereoSGBM_create(numDisparities=128, blockSize=12, speckleWindowSize=50, speckleRange=15, P2 = 1500,)
 disparity = stereo.compute(im_left_remapped,im_right_remapped)
 plt.imshow(disparity/1024,'gray')
-#plt.show()
+plt.show()
 cam = ImagingApi.CameraApi(False, (1, 0))
 while True:
-
 
 
     frame1, frame2 = cam.getPicture()
@@ -189,7 +188,7 @@ while True:
     disparity = stereo.compute(im_left_remapped, im_right_remapped)
     #plt.imshow(disparity / 1024, 'gray')
     #plt.show()
-    cv2.imshow("disparity", disparity / 1024.)
+    cv2.imshow("disparity", disparity / 1024. + 16)
     cv2.waitKey(1)
 
 
