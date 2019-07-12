@@ -191,5 +191,3 @@ while True:
     #plt.show()
     cv2.imshow("disparity", disparity / 1024.)
     cv2.waitKey(1)
-
-

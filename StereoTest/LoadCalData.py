@@ -21,14 +21,14 @@ def getDisparity():
     block_matcher = cv2.StereoBM_create()
 
     rectified_pair = calib_loaded.rectify((left_image, right_image))
-    '''''
+    '''
     cv2.imshow("1",rectified_pair[0])
     cv2.imshow("2",rectified_pair[1])
 
     block_matcher = StereoSGBM()
 
     tuner = BMTuner(block_matcher, calib_loaded, rectified_pair)
-    '''''
+    '''
     # SGBM Parameters -----------------
     window_size = 3  # wsize default 3; 5; 7 for SGBM reduced size image; 15 for SGBM full size image (1300px and above); 5 Works nicely
 
