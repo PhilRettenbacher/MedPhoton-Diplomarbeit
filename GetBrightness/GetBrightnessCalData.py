@@ -4,7 +4,7 @@ import StereoTest
 import glob
 
 webcamID = 2
-cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
+#cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
 alpha = 3
 beta = -150
 
