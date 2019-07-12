@@ -9,7 +9,7 @@ import numpy as np
 
 calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData")
 
-cam = ImagingApi.CameraApi(True, (1, 2))
+cam = ImagingApi.CameraApi(False, (1, 2))
 
 left_image, right_image = cam.getPicture()
 

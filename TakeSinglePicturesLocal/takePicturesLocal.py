@@ -1,7 +1,7 @@
 import cv2;
 import numpy as np;
 #The onboard webcam usually has the id 0
-webcamID = 1;
+webcamID = 2;
 
 cap = cv2.VideoCapture(webcamID, cv2.CAP_DSHOW);
 
