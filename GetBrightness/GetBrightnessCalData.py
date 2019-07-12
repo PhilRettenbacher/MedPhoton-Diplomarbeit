@@ -20,7 +20,12 @@ def getBrightness(str, x, y):
 
 def printBrightness(event,x,y,flags,param):
     TWHITE = '\033[37m'
-    print(TWHITE + str(getBrightness(image, x, y)))
+    TGREEN = '\033[32m'
+    brightness = getBrightness(image, x, y)
+    black = 4000 #cm
+    white = 10 #cm
+    length = 4000/brightness+10
+    print(TWHITE + str(brightness) + TGREEN + " = " + str(round(length)) + "cm")
 
 while(True):
     cv2.setMouseCallback(image, printBrightness)

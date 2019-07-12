@@ -6,7 +6,7 @@ import numpy as np;
 webcamID = 1;
 webcamID2 = 2;
 
-cam = ImagingApi.CameraApi(False, (2,0))
+cam = ImagingApi.CameraApi(True, (1,2))
 
 cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
 cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID2) + '/')
