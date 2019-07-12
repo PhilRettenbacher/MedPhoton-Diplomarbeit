@@ -1,4 +1,5 @@
-import roslib
+#!/usr/bin/env python
+#import roslib
 import sys
 import rospy
 import cv2
@@ -11,6 +12,10 @@ from matplotlib import pyplot as plt
 import time
 import scipy
 
+# change it to your own global path to workspace
+GLOBAL_PATH = "\MedPhoton-Diplomarbeit"
+
+# cv2.namedWindow("window", cv2.WINDOW_AUTOSIZE)
 class Rectify:
 
     def __init__(self):
