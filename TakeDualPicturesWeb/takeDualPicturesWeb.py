@@ -6,16 +6,17 @@ import numpy as np;
 webcamID = 1;
 webcamID2 = 2;
 
-cam = ImagingApi.CameraApi(False, (2,0))
+cam = ImagingApi.CameraApi(False, (1,0))
 
-cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
-cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID2) + '/')
+#cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
+#cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID2) + '/')
 
 # Check success
-if not cap.isOpened():
-    raise Exception("Could not open video device")
-if not cap2.isOpened():
-    raise Exception("Could not open video device")
+#if not cap.isOpened():
+#    raise Exception("Could not open video device")
+#if not cap2.isOpened():
+
+#    raise Exception("Could not open video device")
 
 counter = 0;
 alpha = 3
@@ -24,7 +25,7 @@ beta = -150
 while(True):
     # Capture frame-by-frame
     [frame, frame2] = cam.getPicture()
-
+    print(frame.shape)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
 

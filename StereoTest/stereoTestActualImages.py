@@ -126,8 +126,8 @@ R1, R2, P1, P2, Q, _, _= cv2.stereoRectify(mtxL, distL, mtxR, distR, (imLeft.sha
 map1_x,map1_y=cv2.initUndistortRectifyMap(mtxL, distL, R1, P1, (left_im.shape[1],left_im.shape[0]), cv2.CV_32FC1)
 map2_x,map2_y=cv2.initUndistortRectifyMap(mtxR, distR, R2, P2, (left_im.shape[1],left_im.shape[0]), cv2.CV_32FC1)
 
-rect_im_left = cv2.imread("TestingImagesActual\image_L_07.jpg");
-rect_im_right = cv2.imread("TestingImagesActual\image_R_07.jpg");
+rect_im_left = cv2.imread("TestingImagesActual\image_L_08.jpg");
+rect_im_right = cv2.imread("TestingImagesActual\image_R_08.jpg");
 
 im_left_remapped=cv2.remap(rect_im_left,map1_x,map1_y,cv2.INTER_CUBIC)
 im_right_remapped=cv2.remap(rect_im_right,map2_x,map2_y,cv2.INTER_CUBIC)
@@ -150,7 +150,7 @@ plt.show()
 im_left_remapped = cv2.cvtColor(im_left_remapped, cv2.COLOR_BGR2GRAY)
 im_right_remapped = cv2.cvtColor(im_right_remapped, cv2.COLOR_BGR2GRAY)
 
-stereo = cv2.StereoSGBM_create(numDisparities=128, blockSize=11, speckleWindowSize=50, speckleRange=5, P2 = 1000)
+stereo = cv2.StereoSGBM_create(numDisparities=128, blockSize=7, speckleWindowSize=50, speckleRange=45, P2 = 1000, )
 disparity = stereo.compute(im_left_remapped,im_right_remapped)
-plt.imshow(disparity,'gray')
+plt.imshow(disparity/1024,'gray')
 plt.show()
