@@ -4,7 +4,7 @@ import StereoTest
 import glob
 
 webcamID = 2
-cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
+#cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
 alpha = 3
 beta = -150
 
@@ -20,7 +20,12 @@ def getBrightness(str, x, y):
 
 def printBrightness(event,x,y,flags,param):
     TWHITE = '\033[37m'
-    print(TWHITE + str(getBrightness(image, x, y)))
+    TGREEN = '\033[32m'
+    brightness = getBrightness(image, x, y)
+    black = 4000 #cm
+    white = 10 #cm
+    length = 4000/brightness+10
+    print(TWHITE + str(brightness) + TGREEN + " = " + str(round(length)) + "cm")
 
 while(True):
     cv2.setMouseCallback(image, printBrightness)
@@ -28,5 +33,5 @@ while(True):
     cv2.imshow(image, img)
     if cv2.waitKey(1) == 27:
         break
-cap.release()
+#cap.release()
 cv2.destroyAllWindows()

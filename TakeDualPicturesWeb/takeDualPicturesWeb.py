@@ -6,7 +6,9 @@ import numpy as np;
 webcamID = 1;
 webcamID2 = 2;
 
-cam = ImagingApi.CameraApi(False, (1,0))
+
+cam = ImagingApi.CameraApi(False, (0,1))
+
 
 #cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
 #cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID2) + '/')
@@ -19,8 +21,8 @@ cam = ImagingApi.CameraApi(False, (1,0))
 #    raise Exception("Could not open video device")
 
 counter = 0;
-alpha = 3
-beta = -150
+alpha = 1
+beta = 0
 
 while(True):
     # Capture frame-by-frame
