@@ -1,6 +1,6 @@
 from stereovision import calibration
 from ImagingApi import ImagingApi
-#from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize
 from stereovision.ui_utils import BMTuner
 from stereovision.blockmatchers import StereoSGBM
 import os
@@ -10,13 +10,13 @@ import numpy as np
 calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData")
 
 cam = ImagingApi.CameraApi(False, (1, 0))
-live = False
+live = True
 
 def getDisparity():
     left_image, right_image = cam.getPicture()
 
-    #left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
-    #right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
+    left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
+    right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
 
     block_matcher = cv2.StereoBM_create()
 
@@ -60,11 +60,11 @@ def getDisparity():
 
     print('computing disparity...')
 
-    displ = left_matcher.compute(left_image, right_image)  # .astype(np.float32)/16
-    dispr = right_matcher.compute(right_image, left_image)  # .astype(np.float32)/16
+    displ = left_matcher.compute(rectified_pair[0], rectified_pair[1])  # .astype(np.float32)/16
+    dispr = right_matcher.compute(rectified_pair[1], rectified_pair[0])  # .astype(np.float32)/16
     displ = np.int16(displ)
     dispr = np.int16(dispr)
-    filteredImg = wls_filter.filter(displ, left_image, None, dispr)  # important to put "imgL" here!!!
+    filteredImg = wls_filter.filter(displ, rectified_pair[0], None, dispr)  # important to put "imgL" here!!!
 
     filteredImg = cv2.normalize(src=filteredImg, dst=filteredImg, beta=0, alpha=255, norm_type=cv2.NORM_MINMAX);
     filteredImg = np.uint8(filteredImg)
