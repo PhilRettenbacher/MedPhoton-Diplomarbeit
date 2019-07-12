@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from glob import glob
 import numpy as np
+from ImagingApi import ImagingApi
 
 x,y=np.meshgrid(range(8),range(6))
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -150,7 +151,44 @@ plt.show()
 im_left_remapped = cv2.cvtColor(im_left_remapped, cv2.COLOR_BGR2GRAY)
 im_right_remapped = cv2.cvtColor(im_right_remapped, cv2.COLOR_BGR2GRAY)
 
-stereo = cv2.StereoSGBM_create(numDisparities=128, blockSize=12, speckleWindowSize=70, speckleRange=3, P2 = 1000, mode=cv2.STEREO_SGBM_MODE_HH)
+stereo = cv2.StereoSGBM_create(numDisparities=128, blockSize=12, speckleWindowSize=50, speckleRange=15, P2 = 1500,)
 disparity = stereo.compute(im_left_remapped,im_right_remapped)
 plt.imshow(disparity/1024,'gray')
 plt.show()
+
+while True:
+    cam = ImagingApi.CameraApi(False, (0, 1))
+
+    frame1, frame2 = cam.getPicture()
+
+    im_left_remapped = cv2.remap(frame1, map1_x, map1_y, cv2.INTER_CUBIC)
+    im_right_remapped = cv2.remap(frame2, map2_x, map2_y, cv2.INTER_CUBIC)
+
+    #plt.imshow(im_left_remapped)
+    #plt.show()
+    #out = np.hstack((im_left_remapped, im_right_remapped))
+
+    #plt.figure(figsize=(10, 4))
+    # plt.imshow(out[...,::-1])
+    #plt.show()
+
+    #for i in range(0, out.shape[0], 30):
+    #    cv2.line(out, (0, i), (out.shape[1], i), (0, 255, 255), 3)
+
+    #plt.figure(figsize=(10, 4))
+    # plt.imshow(out[..., ::-1])
+    #plt.show()
+
+    im_left_remapped = cv2.cvtColor(im_left_remapped, cv2.COLOR_BGR2GRAY)
+    im_right_remapped = cv2.cvtColor(im_right_remapped, cv2.COLOR_BGR2GRAY)
+
+    cv2.imshow("L", im_left_remapped)
+    cv2.imshow("R", im_right_remapped)
+
+    stereo = cv2.StereoSGBM_create(numDisparities=128, blockSize=12, speckleWindowSize=50, speckleRange=15, P2=1500, )
+    disparity = stereo.compute(im_left_remapped, im_right_remapped)
+    #plt.imshow(disparity / 1024, 'gray')
+    #plt.show()
+    cv2.imshow("disparity", disparity)
+
+
