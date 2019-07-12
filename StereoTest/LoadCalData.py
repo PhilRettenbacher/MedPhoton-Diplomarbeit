@@ -10,13 +10,13 @@ import numpy as np
 calib_loaded = calibration.StereoCalibration(input_folder=os.getcwd()+"/CalData")
 
 cam = ImagingApi.CameraApi(False, (0, 2))
+live = False
 
-
-while (True):
+def getDisparity():
     left_image, right_image = cam.getPicture()
 
-    #left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
-    #right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
+    left_image = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
+    right_image = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
 
     block_matcher = cv2.StereoBM_create()
 
@@ -44,7 +44,7 @@ while (True):
         speckleWindowSize=0,
         speckleRange=2,
         preFilterCap=63,
-            mode=cv2.STEREO_SGBM_MODE_SGBM_3WAY
+        mode=cv2.STEREO_SGBM_MODE_SGBM_3WAY
     )
 
     right_matcher = cv2.ximgproc.createRightMatcher(left_matcher)
@@ -69,10 +69,17 @@ while (True):
     filteredImg = cv2.normalize(src=filteredImg, dst=filteredImg, beta=0, alpha=255, norm_type=cv2.NORM_MINMAX);
     filteredImg = np.uint8(filteredImg)
     cv2.imshow('Disparity Map', filteredImg)
-    cv2.imshow("1",rectified_pair[0])
-    cv2.imshow("2",rectified_pair[1])
+    cv2.imshow("1", rectified_pair[0])
+    cv2.imshow("2", rectified_pair[1])
     cv2.imwrite('DisparityMap.jpg', filteredImg)
-    if cv2.waitKey(1) == 27:
-        break
+
+if live:
+    while (True):
+        getDisparity()
+        if cv2.waitKey(1) == 27:
+            break
+else:
+    getDisparity()
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()
