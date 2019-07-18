@@ -51,8 +51,11 @@ class CameraApi:
         print("Take picture with space\n")
 
         def on_press(key):
-            if key == Key.space:
-                self.takePicture(self.useWeb)
+            if (key == Key.space):
+                if not self.useWeb:
+                    self.takePictureLocal()
+                else:
+                    self.takePictureWeb()
             if key == KeyCode.from_char('0'):
                 self.destroyCvWindow(0)
                 self.deleteDirectory(0)
@@ -96,7 +99,32 @@ class CameraApi:
             print("Frame does not exist")
         cv2.destroyAllWindows()
 
-    def takePicture(self, useWeb):
+    def getCameraCount(self):
+        return len(self.caps)
+
+    def takePictureWeb(self):
+        count = 0
+        tmpFrames = []
+        tmpCap1 = (cv2.VideoCapture("http://192.168.199.3:8765/picture/1/current/?_username=admin&_signature=405e3e47c0b54c48c7539decf8437b48bb320e16"))
+        found1, frame1 = tmpCap1.read()
+        tmpCap2 = (cv2.VideoCapture("http://192.168.199.3:8765/picture/2/current/?_username=admin&_signature=8364b7955ab9bcfe1b2717c91ea1b2d6f2f59a6a"))
+        found2, frame2 = tmpCap2.read()
+        tmpFrames.append(frame1)
+        tmpFrames.append(frame2)
+        self.makeDirectory(len(self.caps))
+        if(found1&found2):
+            for frm in tmpFrames:
+                if (self.saveInDirectory):
+                    cv2.imwrite("./Pictures/Frame_" + str(count) + "/imageFrame_" + str(count) + "_" + str(
+                        self.imageCount) + ".jpg", frm)
+                else:
+                    cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
+                count += 1
+            print(str(count) + " picture(s) taken")
+            self.imageCount += 1
+        return
+
+    def takePictureLocal(self):
         count = 0
         f = []
         f.clear()
@@ -106,15 +134,10 @@ class CameraApi:
             f.append(frame)
 
         for frm in f:
-            if useWeb:
-                format = ".png"
-            else:
-                format = ".jpeg"
-
             if(self.saveInDirectory):
-                cv2.imwrite("./Pictures/Frame_"+str(count)+"/imageFrame_" + str(count) + "_" + str(self.imageCount) + format, frm)
+                cv2.imwrite("./Pictures/Frame_"+str(count)+"/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
             else:
-                cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + format, frm)
+                cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
             count += 1
         print(str(count)+" picture(s) taken")
         self.imageCount += 1
