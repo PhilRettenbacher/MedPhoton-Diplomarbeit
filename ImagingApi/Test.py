@@ -4,5 +4,6 @@ cap = ImagingApi.CameraApi(640,480,True, False) #resolution(with, height), put P
 
 cap.keyListener()
 
-while True:
-    cap.getFrames()
+cap.makeVideo()
+
+

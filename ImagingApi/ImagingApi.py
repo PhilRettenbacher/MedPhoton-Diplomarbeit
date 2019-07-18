@@ -84,13 +84,10 @@ class CameraApi(object):
                         self.takePictureWeb()
                 if key == KeyCode.from_char('0'):
                     self.destroyCvWindow(0)
-                    self.deleteDirectory(0)
                 if key == KeyCode.from_char('1'):
                     self.destroyCvWindow(1)
-                    self.deleteDirectory(1)
                 if key == KeyCode.from_char('2'):
                     self.destroyCvWindow(2)
-                    self.deleteDirectory(2)
             if key == Key.esc:
                 if self.isRunning:
                     Listener(on_press=on_press).stop()
@@ -151,12 +148,6 @@ class CameraApi(object):
         print(str(count)+" picture(s) taken")
         self.imageCount += 1
         return
-
-    def deleteDirectory(self, frameCount):
-        try:
-            os.rmdir(os.getcwd() + "/Pictures/Frame_" + str(frameCount))
-        except:
-            print("Failed to delete folder")
 
     def makeDirectory(self, frameCount):
         if (os.path.exists(os.getcwd() + "/Pictures")&(self.saveInDirectory)):
