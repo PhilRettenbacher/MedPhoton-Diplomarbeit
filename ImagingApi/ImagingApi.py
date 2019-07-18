@@ -6,7 +6,7 @@ import time
 
 keyboard = Controller()
 
-class CameraApi:
+class CameraApi(object):
 
     saveInDirectory = True
     useWeb = False
@@ -20,7 +20,6 @@ class CameraApi:
 
     def __init__(self, width=640, height=480, saveInDirectory=True, useWeb=False):
         self.saveInDirectory = saveInDirectory
-        self.isRunning = True
         self.useWeb = useWeb
         self.width = width
         self.height = height
@@ -48,30 +47,11 @@ class CameraApi:
         return frames
 
     def makeVideo(self):
+        self.isRunning = True
+
         print("End video with escape")
         print("Close frames with 0, 1, 2")
         print("Take picture with space\n")
-
-        def on_press(key):
-            if (key == Key.space):
-                if not self.useWeb:
-                    self.takePictureLocal()
-                else:
-                    self.takePictureWeb()
-            if key == KeyCode.from_char('0'):
-                self.destroyCvWindow(0)
-                self.deleteDirectory(0)
-            if key == KeyCode.from_char('1'):
-                self.destroyCvWindow(1)
-                self.deleteDirectory(1)
-            if key == KeyCode.from_char('2'):
-                self.destroyCvWindow(2)
-                self.deleteDirectory(2)
-            if key == Key.esc:
-                Listener(on_press=on_press).stop()
-                self.isRunning=False
-
-        Listener(on_press=on_press).start()
 
         while self.isRunning:
             counter = 0
@@ -93,6 +73,33 @@ class CameraApi:
             cv2.waitKey(1)
 
         self.endProgram()
+
+    def keyListener(self):
+        def on_press(key):
+            if self.isRunning:
+                if (key == Key.space):
+                    if not self.useWeb:
+                        self.takePictureLocal()
+                    else:
+                        self.takePictureWeb()
+                if key == KeyCode.from_char('0'):
+                    self.destroyCvWindow(0)
+                    self.deleteDirectory(0)
+                if key == KeyCode.from_char('1'):
+                    self.destroyCvWindow(1)
+                    self.deleteDirectory(1)
+                if key == KeyCode.from_char('2'):
+                    self.destroyCvWindow(2)
+                    self.deleteDirectory(2)
+            if key == Key.esc:
+                if self.isRunning:
+                    Listener(on_press=on_press).stop()
+                    self.isRunning=False
+                else:
+                    Listener(on_press=on_press).stop()
+                    self.endProgram()
+
+        Listener(on_press=on_press).start()
 
     def destroyCvWindow(self, frameNumber):
         try:
@@ -209,12 +216,7 @@ class CameraApi:
         return count
 
     def endProgram(self):
-        self.frames.clear()
-        for c in self.caps:
-            c.release()
-        cv2.destroyAllWindows()
-        print("Program stopped")
-        os._exit(2)
+        self.__del__()
 
     def __del__(self):
         self.frames.clear()
