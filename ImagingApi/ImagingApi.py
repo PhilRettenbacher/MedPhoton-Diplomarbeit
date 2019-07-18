@@ -1,10 +1,12 @@
 import cv2
 import os
 from pynput.keyboard import Key, Listener, Controller, KeyCode
+import time
+
 
 keyboard = Controller()
 
-class CameraApi:
+class CameraApi(object):
 
     saveInDirectory = True
     useWeb = False
@@ -18,7 +20,6 @@ class CameraApi:
 
     def __init__(self, width=640, height=480, saveInDirectory=True, useWeb=False):
         self.saveInDirectory = saveInDirectory
-        self.isRunning = True
         self.useWeb = useWeb
         self.width = width
         self.height = height
@@ -46,30 +47,11 @@ class CameraApi:
         return frames
 
     def makeVideo(self):
+        self.isRunning = True
+
         print("End video with escape")
         print("Close frames with 0, 1, 2")
         print("Take picture with space\n")
-
-        def on_press(key):
-            if (key == Key.space):
-                if not self.useWeb:
-                    self.takePictureLocal()
-                else:
-                    self.takePictureWeb()
-            if key == KeyCode.from_char('0'):
-                self.destroyCvWindow(0)
-                self.deleteDirectory(0)
-            if key == KeyCode.from_char('1'):
-                self.destroyCvWindow(1)
-                self.deleteDirectory(1)
-            if key == KeyCode.from_char('2'):
-                self.destroyCvWindow(2)
-                self.deleteDirectory(2)
-            if key == Key.esc:
-                Listener(on_press=on_press).stop()
-                self.isRunning=False
-
-        Listener(on_press=on_press).start()
 
         while self.isRunning:
             counter = 0
@@ -90,7 +72,31 @@ class CameraApi:
 
             cv2.waitKey(1)
 
-        self.__del__()
+        self.endProgram()
+
+    def keyListener(self):
+        def on_press(key):
+            if self.isRunning:
+                if (key == Key.space):
+                    if not self.useWeb:
+                        self.takePictureLocal()
+                    else:
+                        self.takePictureWeb()
+                if key == KeyCode.from_char('0'):
+                    self.destroyCvWindow(0)
+                if key == KeyCode.from_char('1'):
+                    self.destroyCvWindow(1)
+                if key == KeyCode.from_char('2'):
+                    self.destroyCvWindow(2)
+            if key == Key.esc:
+                if self.isRunning:
+                    Listener(on_press=on_press).stop()
+                    self.isRunning=False
+                else:
+                    Listener(on_press=on_press).stop()
+                    self.endProgram()
+
+        Listener(on_press=on_press).start()
 
     def destroyCvWindow(self, frameNumber):
         try:
@@ -143,12 +149,6 @@ class CameraApi:
         self.imageCount += 1
         return
 
-    def deleteDirectory(self, frameCount):
-        try:
-            os.rmdir(os.getcwd() + "/Pictures/Frame_" + str(frameCount))
-        except:
-            print("Failed to delete folder")
-
     def makeDirectory(self, frameCount):
         if (os.path.exists(os.getcwd() + "/Pictures")&(self.saveInDirectory)):
             for i in range(0, frameCount):
@@ -170,7 +170,7 @@ class CameraApi:
                 print("Successfully created the directory %s " % self.path)
 
     def lookForDevices(self, useWeb):
-        portTestRange = 10
+        portTestRange = 3
         count = 0
         start = -1
         if not useWeb:
@@ -185,19 +185,29 @@ class CameraApi:
                     print("Device found on Port " + str(i))
                     self.caps.append(cap)
         else:
+            timeDelta = 0
             portTestRange = 3
             start = 1
             print("Looking for devices(web)")
             for i in range(start, portTestRange):
-                cap = (cv2.VideoCapture("http://192.168.199.3:808"+str(i)+"/"))
-                found, frame = cap.read()
-                if (found):
-                    count += 1
-                    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-                    cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-                    print("Device found on Port " + str(i))
-                    self.caps.append(cap)
+                if not (timeDelta > 4):
+                    timestampStart = int(round(time.time()))
+                    cap = (cv2.VideoCapture("http://192.168.199.3:808"+str(i)+"/"))
+                    timeDelta = (int(round(time.time())))-timestampStart
+                    found, frame = cap.read()
+                    if (found):
+                        count += 1
+                        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+                        cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+                        print("Device found on Port " + str(i))
+                        self.caps.append(cap)
+                else:
+                    print("Could not find device(time exceeded)")
+                    return count
         return count
+
+    def endProgram(self):
+        self.__del__()
 
     def __del__(self):
         self.frames.clear()
@@ -205,115 +215,9 @@ class CameraApi:
             c.release()
         cv2.destroyAllWindows()
         print("Program stopped")
+        os._exit(1)
 
 
-    # def __init__(self, useWeb, id):
-    #
-    #     self.useWeb = useWeb
-    #     self.id = id
-    #
-    #     self.init()
-    #
-    # def init(self):
-    #     if(self.useWeb):
-    #         print("Initialize Camera in Web ...");
-    #         self.cap1 = cv2.VideoCapture('http://192.168.199.3:808' + str(self.id[0]) + '/')
-    #         self.cap2 = cv2.VideoCapture('http://192.168.199.3:808' + str(self.id[1]) + '/')
-    #         if(not self.cap1.isOpened() or not self.cap2.isOpened()):
-    #             print("Cameras could not be initialized!");
-    #             self.enabled = False
-    #             return
-    #     else:
-    #         print("Initialize Camera locally ...");
-    #         self.cap1 = cv2.VideoCapture(self.id[0], cv2.CAP_DSHOW);
-    #         self.cap2 = cv2.VideoCapture(self.id[1], cv2.CAP_DSHOW);
-    #         if(not self.cap1.isOpened() or not self.cap2.isOpened()):
-    #             print("Cameras could not be initialized!");
-    #             self.enabled = False
-    #             return
-    #     self.enabled = True
-    #
-    # def checkEnabled(self):
-    #     if not self.enabled:
-    #         print("Cameras are not enabled/working/attached")
-    #         exit(1)
-    # def readCameras(self):
-    #     self.checkEnabled()
-    #
-    #
-    #
-    # def writePicture(self):
-    #     if not self.checkEnabled():
-    #         return
-    #
-    #     ret, frame = self.cap1.read()
-    #     ret2, frame2 = self.cap2.read()
-    #
-    #     cv2.imwrite("image_1.jpg", frame)
-    #     cv2.imwrite("image_2.jpg", frame2)
-    #
-    # def getPicture(self):
-    #     if not self.checkEnabled():
-    #         return
-    #
-    #     ret, frame = self.cap1.read()
-    #     ret2, frame2 = self.cap2.read()
-    #
-    #     return (frame, frame2)
-    #
-    # def showPicture(self, waitTime):
-    #     if not self.checkEnabled():
-    #         return
-    #
-    #     frame, frame2 = self.getPicture()
-    #
-    #     cv2.imshow("Image1", frame)
-    #     cv2.imshow("Image2", frame2)
-    #
-    #     cv2.waitKey(waitTime)
-    #
-    # def videoStream(self):
-    #     if not self.checkEnabled():
-    #         return
-    #
-    #     while (True):
-    #         self.showPicture(1)
-    #         if cv2.waitKey(1) == 27:
-    #          break
-    #
-    # def __del__(self):
-    #     self.cap1.release()
-    #     self.cap2.release()
-    #     cv2.destroyAllWindows()
-    #
-    # def setActive(self,id,enabled):
-    #     try:
-    #         if enabled:
-    #             with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/restart') as response:
-    #                 html = response.read()
-    #         else:
-    #             with urllib.request.urlopen('http://192.168.199.3:7999/' + str(id) + '/action/quit') as response:
-    #                 html = response.read()
-    #     except:
-    #         TRED = '\033[31m'
-    #         print(TRED + "Website can't be reached!")
-    #     else:
-    #         TGREEN = '\033[32m'
-    #         print(TGREEN + "Camera restarted/quitted")
-    #     self.init()
-    #
-    # def restartCams(self):
-    #     self.setActive(1, True)
-    #     self.setActive(2, True)
-    #
-    # def quitCams(self):
-    #     self.setActive(1, False)
-    #     self.setActive(2, False)
-    #
-    # def rebootCams(self):
-    #     self.quitCams()
-    #     time.sleep(5)
-    #     self.restartCams()
 
 
 
