@@ -214,6 +214,7 @@ class CameraApi:
             c.release()
         cv2.destroyAllWindows()
         print("Program stopped")
+        os._exit(1)
 
 
 
