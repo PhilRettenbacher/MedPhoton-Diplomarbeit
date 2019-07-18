@@ -7,7 +7,7 @@ webcamID = 1;
 webcamID2 = 2;
 
 
-cam = ImagingApi.CameraApi(False, (0,1))
+cam = ImagingApi.CameraApi(False, (1,0))
 
 
 #cap = cv2.VideoCapture('http://192.168.199.3:808' + str(webcamID) + '/')
@@ -27,7 +27,6 @@ beta = 0
 while(True):
     # Capture frame-by-frame
     [frame, frame2] = cam.getPicture()
-    print(frame.shape)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
 
@@ -35,8 +34,8 @@ while(True):
     cv2.convertScaleAbs(frame2, frame2, alpha, beta);
 
     # Display the resulting frame
-    cv2.imshow('frame',frame)
-    cv2.imshow('frame2', frame2)
+    cv2.imshow('R',frame)
+    cv2.imshow('L', frame2)
 
 
     if cv2.waitKey(1) == 32:
