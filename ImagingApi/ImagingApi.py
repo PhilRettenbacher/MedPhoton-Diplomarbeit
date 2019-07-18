@@ -92,7 +92,7 @@ class CameraApi:
 
             cv2.waitKey(1)
 
-        self.__del__()
+        self.endProgram()
 
     def destroyCvWindow(self, frameNumber):
         try:
@@ -207,6 +207,14 @@ class CameraApi:
                     print("Could not find device(time exceeded)")
                     return count
         return count
+
+    def endProgram(self):
+        self.frames.clear()
+        for c in self.caps:
+            c.release()
+        cv2.destroyAllWindows()
+        print("Program stopped")
+        os._exit(2)
 
     def __del__(self):
         self.frames.clear()
