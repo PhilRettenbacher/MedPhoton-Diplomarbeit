@@ -91,7 +91,7 @@ class StereoCalibrator:
 
         # Calculate Homogeneous matrix transform given features and fundamental matrix
 
-        retval, H1, H2 = cv2.stereoRectifyUncalibrated(x1.ravel(), x2.ravel(), F, self.imgSize)
+        retval, H1, H2 = cv2.stereoRectifyUncalibrated(x1.ravel(), x2.ravel(), F, self.imgSize, threshold=5)
 
         if (retval == False):
             print("ERROR: stereoRectifyUncalibrated failed")
@@ -162,6 +162,7 @@ class StereoCalibrator:
             return(cv2.remap(img, self.mapx1, self.mapy1, interpolation=self.INTERPOLATION, borderMode=cv2.BORDER_CONSTANT))
         else:
             return(cv2.remap(img, self.mapx2, self.mapy2, interpolation=self.INTERPOLATION, borderMode=cv2.BORDER_CONSTANT))
+
 
     def rectify_shearing(self, H1, H2, image_width, image_height):
 
@@ -259,3 +260,6 @@ class StereoCalibrator:
             [0, 0, 1]])
 
     ##### ##### ##### ##### #####
+
+    def getCalcData(self):
+        return (self.mapx1, self.mapy1, self.mapx2, self.mapy2)
