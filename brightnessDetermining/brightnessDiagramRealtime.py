@@ -54,31 +54,49 @@ def setarr(arr):
 
 avergArr = [10] * 200
 
-smoothness = 20
+width_in_inches = 8
+height_in_inches = 3.5
+dots_per_inch = 140
+
+plt.figure(
+    figsize=(width_in_inches, height_in_inches),
+    dpi=dots_per_inch)
+
 while True:
+    #Overall Brightness
     img_gray = cv2.cvtColor(read(cap), cv2.COLOR_BGR2GRAY)
     img_gray = resize(img_gray)
-    cv2.imshow("image", img_gray)
-
     yArr = getRowArray(img_gray)
-    ysmoothed = gaussian_filter1d(yArr, sigma=smoothness)
+    ysmoothed = gaussian_filter1d(yArr, sigma=4)
 
+    plt.subplot(1, 2, 2)
+    plt.ylim(top=350)
+    plt.ylim(bottom=0)
+    plt.title('Overall Brightness, starting from the top')
+    plt.ylabel("Brightness")
+    plt.xlabel('Pixelrows from image')
+    # plt.plot(yArr)
+    plt.plot(ysmoothed)
+    # plt.plot(calcAvergBrightnessArr(yArr))
+
+
+    #Realtime Average
     avergArr = setarr(avergArr)
-    avergsmoothed = gaussian_filter1d(avergArr, sigma=5)
+    avergsmoothed = gaussian_filter1d(avergArr, sigma=4)
+    avergArr[len(avergArr) - 1] = calcAvergBrightness(yArr)
 
-    plt.plot(avergArr)
+    plt.subplot(1, 2, 1)
+    plt.ylim(top=350)
+    plt.ylim(bottom=0)
+    plt.title('Average Brightness over time')
+    plt.ylabel('brightness')
+    plt.xlabel('Time')
+    #plt.plot(avergArr)
     plt.plot(avergsmoothed)
 
 
-    #plt.plot(yArr)
-    #plt.plot(ysmoothed)
-    #plt.plot(calcAvergBrightnessArr(yArr))
-    avergArr[len(avergArr) - 1] = calcAvergBrightness(yArr)
-
-    plt.ylabel("Brightness")
-    plt.title('graph')
-    plt.ylim(top=400)
-    plt.ylim(bottom=0)
     plt.draw()
     plt.pause(0.000000001)
     plt.clf()
+
+    cv2.imshow("image", img_gray)
