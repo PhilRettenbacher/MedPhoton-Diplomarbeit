@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter1d
 
 def resize(img):
-    scale_percent = 50  # percent of original size
+    scale_percent = 100  # percent of original size
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
     dim = (width, height)
@@ -47,7 +47,7 @@ def setarr(arr):
 
 def setup():
     avergArr = [10] * 200
-    plt.figure(figsize=(8, 3.5), dpi=140)
+    plt.figure(figsize=(8, 3), dpi=80)
     return avergArr
 
 def trueLoop(avergArr, image):
