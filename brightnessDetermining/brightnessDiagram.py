@@ -1,5 +1,6 @@
 import cv2
 import matplotlib.pyplot as plt
+from scipy.ndimage.filters import gaussian_filter1d
 
 image = 'testpic.jpg'
 img_rgb = cv2.imread(image)
@@ -16,7 +17,7 @@ def resize(img):
 
 img_gray = resize(img_gray)
 
-def getArray(img):
+def getRowArray(img):
     width, height = img.shape[:2]
     rowArray = []
     for x in range(width):
@@ -28,8 +29,6 @@ def getArray(img):
         rowArray.append(round(avgRowbrightness))
     return rowArray
 
-rowArray = getArray(img_gray)
-
 def calcAvergBrightness(arr):
     sum = 0
     for x in range(len(arr)):
@@ -40,9 +39,16 @@ def calcAvergBrightness(arr):
         newarr.append(averg)
     return newarr
 
+img_gray = resize(img_gray)
 cv2.imshow("image", img_gray)
-plt.plot(getArray(img_gray))
-plt.plot(calcAvergBrightness(rowArray))
+
+yArr = getRowArray(img_gray)
+ysmoothed = gaussian_filter1d(yArr, sigma=20)
+
+plt.plot(yArr)                          #original curve
+plt.plot(ysmoothed)                     #smoothed curve
+plt.plot(calcAvergBrightness(yArr))     #average brightness of curve
+
 plt.xlabel("Pixelrow")
 plt.ylabel("Brightness")
 plt.show()
