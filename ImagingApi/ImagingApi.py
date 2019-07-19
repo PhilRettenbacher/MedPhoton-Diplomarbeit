@@ -1,8 +1,10 @@
+# Version 0.0.2.10
+# Author Hannes Schürer
+
 import cv2
 import os
 from pynput.keyboard import Key, Listener, KeyCode
 import time
-
 
 # Class for managing camera output to the screen and picture storage
 
@@ -193,6 +195,7 @@ class CameraApi:
                 print("Creation of the directory %s failed" % self.path)
 
 # lookForDevices searches for devices that are attached to the computer
+# If you don't like to use the web cam, just disable it in the device-manager
 
     def lookForDevices(self, useWeb):
         portTestRange = 3
