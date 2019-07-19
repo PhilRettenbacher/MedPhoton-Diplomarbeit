@@ -1,8 +1,10 @@
+# Version 0.0.2.10
+# Author Hannes Schürer
+
 import cv2
 import os
 from pynput.keyboard import Key, Listener, KeyCode
 import time
-
 
 # Class for managing camera output to the screen and picture storage
 
@@ -15,6 +17,7 @@ class CameraApi:
     frames = []
     path = ""
     imageCount = 0
+    totalImages = 0
     isRunning = False
 
 # The constructor takes 4 parameters(width, height, saveInDirectory saves Pictures in separate folders of each frame if it's true,
@@ -146,8 +149,9 @@ class CameraApi:
                 else:
                     cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
                 count += 1
-            print(str(count) + " picture(s) taken")
             self.imageCount += 1
+            self.totalImages += count
+            print(str(count) + " picture(s) taken, (total of: "+str(self.totalImages)+")")
         return
 
 # takePictureLocal simply writes the current frame in a folder
@@ -168,8 +172,9 @@ class CameraApi:
             else:
                 cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
             count += 1
-        print(str(count) + " picture(s) taken")
         self.imageCount += 1
+        self.totalImages += count
+        print(str(count) + " picture(s) taken, (total of: " + str(self.totalImages) + ")")
         return
 
 # controls the creation of directories
@@ -193,6 +198,7 @@ class CameraApi:
                 print("Creation of the directory %s failed" % self.path)
 
 # lookForDevices searches for devices that are attached to the computer
+# If you don't like to use the web cam, just disable it in the device-manager
 
     def lookForDevices(self, useWeb):
         portTestRange = 3
