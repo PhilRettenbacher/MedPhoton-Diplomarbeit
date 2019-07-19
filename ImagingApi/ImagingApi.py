@@ -1,10 +1,10 @@
 import cv2
 import os
-from pynput.keyboard import Key, Listener, Controller, KeyCode
+from pynput.keyboard import Key, Listener, KeyCode
 import time
 
-keyboard = Controller()
 
+# Class for managing camera output to the screen and picture storage
 
 class CameraApi:
     saveInDirectory = True
@@ -16,6 +16,9 @@ class CameraApi:
     path = ""
     imageCount = 0
     isRunning = False
+
+# The constructor takes 4 parameters(width, height, saveInDirectory saves Pictures in separate folders of each frame if it's true,
+# useWeb streams pictures from the attached cameras on the Pi
 
     def __init__(self, width=640, height=480, saveInDirectory=True, useWeb=False):
         self.saveInDirectory = saveInDirectory
@@ -32,11 +35,15 @@ class CameraApi:
             print("No device found\n")
             exit(1)
 
+# readCapture is needed to constantly update the frames array
+
     def readCapture(self):
         self.frames.clear()
         for c in self.caps:
             ret, frame = c.read()
             self.frames.append(frame)
+
+# getFrames can be used to return a frame array if needed
 
     def getFrames(self):
         frames = []
@@ -44,6 +51,8 @@ class CameraApi:
             ret, frame = c.read()
             frames.append(frame)
         return frames
+
+# makeVideo opens a window for each frame and streams the output of all attached cameras in it
 
     def makeVideo(self):
         self.isRunning = True
@@ -73,6 +82,10 @@ class CameraApi:
 
         self.endProgram()
 
+# key functions: space stores the current picture of the attached cameras
+#                the number keys can close the windows if needed
+#                with escape you can exit the program
+
     def keyListener(self):
         def on_press(key):
             if self.isRunning:
@@ -97,6 +110,8 @@ class CameraApi:
 
         Listener(on_press=on_press).start()
 
+# controls the window closing
+
     def destroyCvWindow(self, frameNumber):
         try:
             self.caps.pop(frameNumber)
@@ -104,8 +119,12 @@ class CameraApi:
             print("Frame does not exist")
         cv2.destroyAllWindows()
 
+# returns the amount of the attached cameras
+
     def getCameraCount(self):
         return len(self.caps)
+
+# takePictureWeb takes picture with the url of the manufacturer
 
     def takePictureWeb(self):
         count = 0
@@ -122,13 +141,16 @@ class CameraApi:
         if found1 & found2:
             for frm in tmpFrames:
                 if self.saveInDirectory:
-                    cv2.imwrite("./Pictures/Frame_" + str(count) + "/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
+                    cv2.imwrite("./Pictures/Frame_" + str(count) + "/imageFrame_" + str(count) + "_" + str(
+                        self.imageCount) + ".jpg", frm)
                 else:
                     cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
                 count += 1
             print(str(count) + " picture(s) taken")
             self.imageCount += 1
         return
+
+# takePictureLocal simply writes the current frame in a folder
 
     def takePictureLocal(self):
         count = 0
@@ -150,8 +172,10 @@ class CameraApi:
         self.imageCount += 1
         return
 
+# controls the creation of directories
+
     def makeDirectory(self, frameCount):
-        if os.path.exists(os.getcwd() + "/Pictures") & (self.saveInDirectory):
+        if os.path.exists(os.getcwd() + "/Pictures") & self.saveInDirectory:
             for i in range(0, frameCount):
                 if not (os.path.exists(os.getcwd() + "/Pictures/Frame_" + str(i))):
                     os.mkdir(os.getcwd() + "/Pictures/Frame_" + str(i))
@@ -162,11 +186,13 @@ class CameraApi:
                 if not os.path.exists(os.getcwd() + "/Pictures"):
                     self.path = self.path + "/Pictures"
                     os.mkdir(self.path)
-                if (self.saveInDirectory):
+                if self.saveInDirectory:
                     for i in range(0, frameCount):
                         os.mkdir(self.path + "/Frame_" + str(i))
             except OSError:
                 print("Creation of the directory %s failed" % self.path)
+
+# lookForDevices searches for devices that are attached to the computer
 
     def lookForDevices(self, useWeb):
         portTestRange = 3
@@ -177,7 +203,7 @@ class CameraApi:
             for i in range(start, portTestRange):
                 cap = (cv2.VideoCapture(i, cv2.CAP_DSHOW))
                 found, frame = cap.read()
-                if (found):
+                if found:
                     count += 1
                     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
                     cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
@@ -205,8 +231,12 @@ class CameraApi:
                     return count
         return count
 
+# endProgram simply calls the destructor
+
     def endProgram(self):
         self.__del__()
+
+# the destructor releases all devices and destroys all windows
 
     def __del__(self):
         self.frames.clear()
