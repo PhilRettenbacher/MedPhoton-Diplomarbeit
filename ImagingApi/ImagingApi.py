@@ -170,7 +170,7 @@ class CameraApi:
             else:
                 cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
             count += 1
-        self.imageCount += count
+        self.imageCount += 1
         print(str(count) + " picture(s) taken, (total of: " + str(self.imageCount) + ")")
         return
 
