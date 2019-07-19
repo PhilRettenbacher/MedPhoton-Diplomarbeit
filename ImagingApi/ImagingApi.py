@@ -17,6 +17,7 @@ class CameraApi:
     frames = []
     path = ""
     imageCount = 0
+    totalImages = 0
     isRunning = False
 
 # The constructor takes 4 parameters(width, height, saveInDirectory saves Pictures in separate folders of each frame if it's true,
@@ -149,7 +150,8 @@ class CameraApi:
                     cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
                 count += 1
             self.imageCount += 1
-            print(str(count) + " picture(s) taken, (total of: "+str(self.imageCount)+")")
+            self.totalImages += count
+            print(str(count) + " picture(s) taken, (total of: "+str(self.totalImages)+")")
         return
 
 # takePictureLocal simply writes the current frame in a folder
@@ -170,8 +172,9 @@ class CameraApi:
             else:
                 cv2.imwrite("./Pictures/imageFrame_" + str(count) + "_" + str(self.imageCount) + ".jpg", frm)
             count += 1
-        self.imageCount += count
-        print(str(count) + " picture(s) taken, (total of: " + str(self.imageCount) + ")")
+        self.imageCount += 1
+        self.totalImages += count
+        print(str(count) + " picture(s) taken, (total of: " + str(self.totalImages) + ")")
         return
 
 # controls the creation of directories
