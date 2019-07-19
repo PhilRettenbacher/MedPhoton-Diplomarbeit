@@ -1,16 +1,9 @@
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter1d
 
-def read(cap):
-    ret, image = cap.read()
-    return image
-
-cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-
 def resize(img):
-    scale_percent = 50  # percent of original size
+    scale_percent = 100  # percent of original size
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
     dim = (width, height)
@@ -52,19 +45,14 @@ def setarr(arr):
         arr[x] = arr[x+1]
     return arr
 
-avergArr = [10] * 200
+def setup():
+    avergArr = [10] * 200
+    plt.figure(figsize=(8, 3), dpi=80)
+    return avergArr
 
-width_in_inches = 8
-height_in_inches = 3.5
-dots_per_inch = 140
-
-plt.figure(
-    figsize=(width_in_inches, height_in_inches),
-    dpi=dots_per_inch)
-
-while True:
-    #Overall Brightness
-    img_gray = cv2.cvtColor(read(cap), cv2.COLOR_BGR2GRAY)
+def trueLoop(avergArr, image):
+    # Overall Brightness
+    img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     img_gray = resize(img_gray)
     yArr = getRowArray(img_gray)
     ysmoothed = gaussian_filter1d(yArr, sigma=4)
@@ -79,8 +67,7 @@ while True:
     plt.plot(ysmoothed)
     # plt.plot(calcAvergBrightnessArr(yArr))
 
-
-    #Realtime Average
+    # Realtime Average
     avergArr = setarr(avergArr)
     avergsmoothed = gaussian_filter1d(avergArr, sigma=4)
     avergArr[len(avergArr) - 1] = calcAvergBrightness(yArr)
@@ -91,12 +78,11 @@ while True:
     plt.title('Average Brightness over time')
     plt.ylabel('brightness')
     plt.xlabel('Time')
-    #plt.plot(avergArr)
+    # plt.plot(avergArr)
     plt.plot(avergsmoothed)
 
-
     plt.draw()
-    plt.pause(0.000000001)
+    plt.pause(0.001)
     plt.clf()
 
     cv2.imshow("image", img_gray)
