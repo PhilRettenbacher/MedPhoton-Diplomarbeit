@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
-def resize(img):
-    scale_percent = 100  # percent of original size
+def resize(img, percent):
+    scale_percent = percent  # percent of original size
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
     dim = (width, height)
@@ -49,7 +49,7 @@ def trueLoop(array1, image, smoothed, counter):
 
     if counter%5 == 0:
         plt.clf()
-        
+
         # ______plot 1______
         #plt.subplot(1, 2, 1)
         setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
