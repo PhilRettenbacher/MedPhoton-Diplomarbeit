@@ -51,14 +51,14 @@ def trueLoop(array1, image, smoothed, counter):
         plt.clf()
 
         # ______plot 1______
-        #plt.subplot(1, 2, 1)
+        plt.subplot(1, 2, 1)
         setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
         plt.plot(array1)
 
         # ______plot 2______
-        #plt.subplot(1, 2, 2)
-        #setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
-        #plt.plot(array2)
+        plt.subplot(1, 2, 2)
+        setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
+        plt.plot(array2)
         plt.draw()
 
     plt.pause(0.0001)
