@@ -63,9 +63,9 @@ for x in range(0, dualCalCount):
     calib.addCheckerBoard(imLeft, imRight, False, False, 0)
 
 
-cv2.waitKey(0)
 
 calib.calibrate(shearing=True)
+
 #cv2.imshow("rectify", calib.re1ctifyImg(calib.undistort(imLeft, True), True))
 #cv2.imshow("rechtify2", calib.rectifyImg(calib.undistort(imRight, False), False))
 cv2.waitKey(0)
@@ -78,7 +78,7 @@ maxDisp = 16*25
 bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=8, P2=10000, P1=5000, uniquenessRatio=1)
 avergArr = bdr.setup()
 while True:
-    frames = cap.getFrames()
+    frames = #cap.getFrames()
 
     imLeft = frames[0]
     imRight = frames[1]
@@ -86,11 +86,11 @@ while True:
     iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
     imr = calib.rectifyImg(calib.undistort(imRight, False), False)
 
-    cv2.imshow("L", imLeft)
-    cv2.imshow("R", imRight)
+    cv2.imshow("L", iml)
+    cv2.imshow("R", imr)
 
     disp = bm.compute(iml, imr)
     disp = (disp - (minDisp - 1) * 16) / (((maxDisp - minDisp)) * 16)
-    bdr.trueLoop(avergArr, disp*800)
+    #bdr.trueLoop(avergArr, disp*800)
     cv2.imshow("disp", disp)
     cv2.waitKey(1)

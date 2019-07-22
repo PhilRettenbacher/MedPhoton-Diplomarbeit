@@ -105,8 +105,10 @@ class StereoCalibrator:
         R1 = K_inverse.dot(H1).dot(K)
         R2 = K_inverse.dot(H2).dot(K)
 
-        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(K, d, R1, K, self.imgSize, cv2.CV_16SC2)
-        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(K, d, R2, K, self.imgSize, cv2.CV_16SC2)
+        newMtx, roi = cv2.getOptimalNewCameraMatrix(self.internalMonoCal.mtx, self.internalMonoCal.dist, self.imgSize, 1)
+
+        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(K, d, R1, newMtx, self.imgSize, cv2.CV_16SC2)
+        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(K, d, R2, newMtx, self.imgSize, cv2.CV_16SC2)
 
         # Find an unused colour to build a border mask
         # Note: Assuming that the union of both image intensity sets do not exhaust the 8 bit range
