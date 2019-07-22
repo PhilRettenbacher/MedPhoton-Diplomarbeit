@@ -17,7 +17,7 @@ def getRowArray(img):
     rowArray = []
     for x in range(height):
         rowsum = cv2.sumElems(img[x])[0]
-        avgRowbrightness = rowsum/height
+        avgRowbrightness = rowsum/width
         rowArray.append(round(avgRowbrightness))
     return rowArray
 
@@ -27,7 +27,7 @@ def setarr(arr):
     return arr
 
 def setup():
-    avergArr = [10] * 200
+    avergArr = [100] * 100
     plt.figure(figsize=(11, 4.5), dpi=70)
     plt.style.use('fivethirtyeight')
     return avergArr
@@ -63,13 +63,13 @@ def trueLoop(array1, image, smoothed, counter, frequency, mode):
             if mode == 1 or mode == 3:
                 if mode == 3:
                     plt.subplot(121)
-                setplt(350, 0, 'Brightness/Time', 'Brightness', 'Time')
-                plt.plot(array1, 'm', linewidth=4)
+                setplt(array1.max()+50, array1.min()-50, 'Brightness/Time', 'Brightness', 'Time')
+                plt.plot(array1, 'm', linewidth=2)
             if mode == 2 or mode == 3:
                 if mode == 3:
                     plt.subplot(122)
-                setplt(350, 0, 'Brightness/Row', 'Brightness', 'Pixelrows from image')
-                plt.plot(array2, 'c', linewidth=4)
+                setplt(array2.max()+50, array2.min()-50, 'Brightness/Row', 'Brightness', 'Pixelrows from image')
+                plt.plot(array2, 'c', linewidth=2)
             plt.draw()
     except:
         print('\033[1;31m Division by zero error! Frequency must not be zero')

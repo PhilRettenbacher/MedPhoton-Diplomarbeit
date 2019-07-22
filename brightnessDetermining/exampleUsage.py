@@ -12,7 +12,7 @@ while True:
     ret, image = cap.read()
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    bdr.trueLoop(avergArr, image, True, counter, 5, 3)
+    bdr.trueLoop(avergArr, image, True, counter, 1, 3)
     counter += 1
 
     cv2.imshow("image", image)
