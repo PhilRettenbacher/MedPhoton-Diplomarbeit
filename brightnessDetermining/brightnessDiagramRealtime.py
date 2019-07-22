@@ -1,10 +1,10 @@
-import cv2
-import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter1d
+import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
-def resize(img):
-    scale_percent = 100  # percent of original size
+def resize(img, percent):
+    scale_percent = percent  # percent of original size
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
     dim = (width, height)
@@ -31,7 +31,6 @@ def setup():
     plt.figure(figsize=(8, 3), dpi=80)
     return avergArr
 
-
 def setplt(scaleT, scaleB, title, yLabel, xLabel):
     plt.ylim(top=scaleT)
     plt.ylim(bottom=scaleB)
@@ -48,17 +47,18 @@ def trueLoop(array1, image, smoothed, counter):
         array1 = gaussian_filter1d(array1, sigma=1)
         array2 = gaussian_filter1d(array2, sigma=8)
 
-    if counter%20 == 0:
+    if counter%5 == 0:
         plt.clf()
-        #plot 1
+
+        # ______plot 1______
         #plt.subplot(1, 2, 1)
         setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
         plt.plot(array1)
 
-        #plot 2
+        # ______plot 2______
         #plt.subplot(1, 2, 2)
         #setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
         #plt.plot(array2)
+        plt.draw()
 
-    plt.draw()
-    plt.pause(0.0000000001)
+    plt.pause(0.0001)
