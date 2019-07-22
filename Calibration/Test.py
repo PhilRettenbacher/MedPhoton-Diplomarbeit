@@ -69,7 +69,7 @@ cap.keyListener()
 
 minDisp = -16*0
 maxDisp = 16*25
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=8, P2=10000, P1=5000, uniquenessRatio=1)
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=5, P2=20000, uniquenessRatio=0)
 avergArr = bdr.setup()
 counter = 0
 while True:
@@ -87,7 +87,9 @@ while True:
     disp = (disp - (minDisp - 1) * 16) / (((maxDisp - minDisp)) * 16)
 
     # Graphics
+
     bdr.trueLoop(avergArr, disp*800, True, counter, 5, 3)
+
     counter += 1
 
     cv2.imshow("disp", disp)
