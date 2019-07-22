@@ -105,7 +105,7 @@ class StereoCalibrator:
         R1 = K_inverse.dot(H1).dot(K)
         R2 = K_inverse.dot(H2).dot(K)
 
-        newMtx, roi = cv2.getOptimalNewCameraMatrix(self.internalMonoCal.mtx, self.internalMonoCal.dist, self.imgSize, 1)
+        newMtx, roi = cv2.getOptimalNewCameraMatrix(self.internalMonoCal.mtx, self.internalMonoCal.dist, self.imgSize, 0.5)
 
         self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(K, d, R1, newMtx, self.imgSize, cv2.CV_16SC2)
         self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(K, d, R2, newMtx, self.imgSize, cv2.CV_16SC2)

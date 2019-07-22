@@ -67,9 +67,9 @@ calib.calibrate(shearing=True)
 cap = ImagingApi.CameraApi(1024, 768)
 cap.keyListener()
 
-minDisp = -16*0
-maxDisp = 16*25
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=5, P2=20000, uniquenessRatio=0)
+minDisp = -16*8
+maxDisp = 16*17
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=5, P2=20000, P1=100, uniquenessRatio=0, speckleWindowSize=20, speckleRange=300)
 avergArr = bdr.setup()
 counter = 0
 while True:
@@ -88,7 +88,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(avergArr, disp*800, True, counter, 5, 3)
+    bdr.trueLoop(avergArr, disp*800, True, counter, 1, 3)
 
     counter += 1
 
