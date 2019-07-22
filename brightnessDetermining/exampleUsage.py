@@ -2,7 +2,7 @@ from brightnessDetermining import brightnessDiagramRealtime as bdr
 import datetime
 import cv2
 
-cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 avergArr = bdr.setup()
 time = []
 
@@ -12,7 +12,7 @@ while True:
     ret, image = cap.read()
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    bdr.trueLoop(avergArr, image, True, counter)
+    bdr.trueLoop(avergArr, image, True, counter, 5, 3)
     counter += 1
 
     cv2.imshow("image", image)
