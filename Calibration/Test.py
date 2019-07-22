@@ -2,7 +2,6 @@ import cv2
 from Calibration import StereoCalibration
 from Calibration import MonoCalibration
 import numpy
-import datetime
 from brightnessDetermining import brightnessDiagramRealtime as bdr
 from ImagingApi import ImagingApi
 
@@ -40,14 +39,11 @@ if(recalibrate):
     calDataR = calibR.getCalibData()
     numpy.save("RightCalib.npy", calDataR)
 
-
     cv2.waitKey(0)
 
 else:
     calDataL = numpy.load("LeftCalib.npy", allow_pickle=True)
     calDataR = numpy.load("RightCalib.npy", allow_pickle=True)
-
-
 
 calib = StereoCalibration.StereoCalibrator((8, 6), imLeft.shape[0:2], calDataL, calDataR)
 
@@ -77,11 +73,9 @@ bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp
 avergArr = bdr.setup()
 counter = 0
 while True:
-
     imLeft, imRight = cap.getFrames()
     imLeft = bdr.resize(imLeft, 50)
     imRight = bdr.resize(imRight, 50)
-
 
     iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
     imr = calib.rectifyImg(calib.undistort(imRight, False), False)
@@ -92,11 +86,11 @@ while True:
     disp = bm.compute(iml, imr)
     disp = (disp - (minDisp - 1) * 16) / (((maxDisp - minDisp)) * 16)
 
-
     # Graphics
-    bdr.trueLoop(avergArr, disp*800, False, counter)
-    counter += 1
 
+    bdr.trueLoop(avergArr, disp*800, True, counter, 5, 3)
+
+    counter += 1
 
     cv2.imshow("disp", disp)
     cv2.waitKey(1)

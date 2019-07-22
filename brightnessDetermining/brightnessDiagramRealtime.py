@@ -38,7 +38,7 @@ def setplt(scaleT, scaleB, title, yLabel, xLabel):
     plt.ylabel(yLabel)
     plt.xlabel(xLabel)
 
-def trueLoop(array1, image, smoothed, counter):
+def trueLoop(array1, image, smoothed, counter, frequency, mode):
     array1 = setarr(array1)
     array2 = getRowArray(image)
     array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
@@ -47,18 +47,20 @@ def trueLoop(array1, image, smoothed, counter):
         array1 = gaussian_filter1d(array1, sigma=1)
         array2 = gaussian_filter1d(array2, sigma=8)
 
-    if counter%5 == 0:
+    if counter%frequency == 0:
         plt.clf()
 
-        # ______plot 1______
-        plt.subplot(1, 2, 1)
-        setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
-        plt.plot(array1)
+        if mode == 1 or mode == 3:
+            if mode == 3:
+                plt.subplot(121)
+            setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
+            plt.plot(array1)
+        if mode == 2 or mode == 3:
+            if mode == 3:
+                plt.subplot(122)
+            setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
+            plt.plot(array2)
 
-        # ______plot 2______
-        plt.subplot(1, 2, 2)
-        setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
-        plt.plot(array2)
         plt.draw()
 
     plt.pause(0.0001)
