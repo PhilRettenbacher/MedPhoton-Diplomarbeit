@@ -27,7 +27,9 @@ class MonoCalibrator:
 
             if(show):
                 im = img.copy()
-                cv2.imshow("checkerBoard", cv2.drawChessboardCorners(1, self.checkerSize, corners, ret))
+
+                cv2.imshow("checkerBoard", cv2.drawChessboardCorners(im, self.checkerSize, corners, ret))
+
                 cv2.waitKey(delay)
 
             self.Points2D.append(corners)  # append current 2D points
