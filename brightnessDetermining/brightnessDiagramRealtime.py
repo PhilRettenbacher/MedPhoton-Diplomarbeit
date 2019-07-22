@@ -27,7 +27,7 @@ def setarr(arr):
     return arr
 
 def setup():
-    avergArr = [10] * 200
+    avergArr = [100] * 100
     plt.figure(figsize=(11, 4.5), dpi=70)
     plt.style.use('fivethirtyeight')
     return avergArr
@@ -39,9 +39,19 @@ def setplt(scaleT, scaleB, title, yLabel, xLabel):
     plt.ylabel(yLabel)
     plt.xlabel(xLabel)
 
-def trueLoop(array1, image, smoothed, counter, frequency, mode):
+def getMainEmphasis(arr):
+    sum = cv2.sumElems(np.array(arr))[0]
+    i = 0
+    for x in range(len(arr)):
+        i+=arr[x]
+        if i >= (sum/2):
+            return x
+
+
+def trueLoop(array1, image, smoothed, counter, frequency, mode, Emphasis):
     if smoothed != False and smoothed != True: print('\033[1;31m Input error! smoothed must be True or False'), exit(0)
     if mode != 1 and mode != 2 and mode != 3: print('\033[1;31m Input error! Mode must be 1, 2 or 3'), exit(0)
+
     try:
         array1 = setarr(array1)
     except:
@@ -52,7 +62,11 @@ def trueLoop(array1, image, smoothed, counter, frequency, mode):
     except:
         print('\033[1;31m Input error! Image is no image')
         exit(0)
-    array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
+    emphPoint = getMainEmphasis(array2)
+    if not Emphasis:
+        array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
+    else:
+        array1[len(array1) - 1] = emphPoint
 
     if smoothed:
         array1 = gaussian_filter1d(array1, sigma=1)
@@ -63,16 +77,23 @@ def trueLoop(array1, image, smoothed, counter, frequency, mode):
             if mode == 1 or mode == 3:
                 if mode == 3:
                     plt.subplot(121)
-                setplt(600, 400, 'Brightness/Time', 'Brightness', 'Time')
+
+                setplt(array1.max()+50, array1.min()-50, 'Brightness/Time', 'Brightness', 'Time')
+
                 plt.plot(array1, 'm', linewidth=2)
             if mode == 2 or mode == 3:
                 if mode == 3:
                     plt.subplot(122)
-                setplt(1000, 0, 'Brightness/Row', 'Brightness', 'Pixelrows from image')
+
+                setplt(array2.max()+50, array2.min()-50, 'Brightness/Row', 'Brightness', 'Pixelrows from image')
+                plt.scatter(emphPoint, 100, s=200)
+
                 plt.plot(array2, 'c', linewidth=2)
             plt.draw()
     except:
         print('\033[1;31m Division by zero error! Frequency must not be zero')
         exit(0)
+
+    print(getMainEmphasis(array2))
 
     plt.pause(0.0001)
