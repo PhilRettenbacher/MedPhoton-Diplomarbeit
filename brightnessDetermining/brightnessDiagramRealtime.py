@@ -28,7 +28,8 @@ def setarr(arr):
 
 def setup():
     avergArr = [10] * 200
-    plt.figure(figsize=(8, 3), dpi=80)
+    plt.figure(figsize=(11, 4.5), dpi=70)
+    plt.style.use('fivethirtyeight')
     return avergArr
 
 def setplt(scaleT, scaleB, title, yLabel, xLabel):
@@ -39,26 +40,39 @@ def setplt(scaleT, scaleB, title, yLabel, xLabel):
     plt.xlabel(xLabel)
 
 def trueLoop(array1, image, smoothed, counter, frequency, mode):
-    array1 = setarr(array1)
-    array2 = getRowArray(image)
+    if smoothed != False and smoothed != True: print('\033[1;31m Input error! smoothed must be True or False'), exit(0)
+    if mode != 1 and mode != 2 and mode != 3: print('\033[1;31m Input error! Mode must be 1, 2 or 3'), exit(0)
+    try:
+        array1 = setarr(array1)
+    except:
+        print('\033[1;31m Sequence error! Setup must happen first')
+        exit(0)
+    try:
+        array2 = getRowArray(image)
+    except:
+        print('\033[1;31m Input error! Image is no image')
+        exit(0)
     array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
 
     if smoothed:
         array1 = gaussian_filter1d(array1, sigma=1)
         array2 = gaussian_filter1d(array2, sigma=8)
-
-    if counter%frequency == 0:
-        plt.clf()
-        if mode == 1 or mode == 3:
-            if mode == 3:
-                plt.subplot(121)
-            setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
-            plt.plot(array1)
-        if mode == 2 or mode == 3:
-            if mode == 3:
-                plt.subplot(122)
-            setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
-            plt.plot(array2)
-        plt.draw()
+    try:
+        if counter%frequency == 0:
+            plt.clf()
+            if mode == 1 or mode == 3:
+                if mode == 3:
+                    plt.subplot(121)
+                setplt(350, 0, 'Brightness/Time', 'Brightness', 'Time')
+                plt.plot(array1, 'm', linewidth=4)
+            if mode == 2 or mode == 3:
+                if mode == 3:
+                    plt.subplot(122)
+                setplt(350, 0, 'Brightness/Row', 'Brightness', 'Pixelrows from image')
+                plt.plot(array2, 'c', linewidth=4)
+            plt.draw()
+    except:
+        print('\033[1;31m Division by zero error! Frequency must not be zero')
+        exit(0)
 
     plt.pause(0.0001)
