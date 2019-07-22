@@ -5,7 +5,6 @@ from Calibration import MonoCalibration
 class StereoCalibrator:
     L2DPoints = []
     R2DPoints = []
-    Points3D = []
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -50,7 +49,6 @@ class StereoCalibrator:
 
             self.R2DPoints.append(cornersR)
             self.L2DPoints.append(cornersL)  # append current 2D points
-            self.Points3D.append(self.world_points)
 
         return (retL, retR, cornersL, cornersR)
 

@@ -52,7 +52,7 @@ def setup():
 
 def trueLoop(avergArr, image):
     # Overall Brightness
-    img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    img_gray = image#cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     img_gray = resize(img_gray)
     yArr = getRowArray(img_gray)
     ysmoothed = gaussian_filter1d(yArr, sigma=4)
@@ -63,13 +63,13 @@ def trueLoop(avergArr, image):
     plt.title('Overall Brightness, starting from the top')
     plt.ylabel("Brightness")
     plt.xlabel('Pixelrows from image')
-    # plt.plot(yArr)
+    #plt.plot(yArr)
     plt.plot(ysmoothed)
     # plt.plot(calcAvergBrightnessArr(yArr))
 
     # Realtime Average
     avergArr = setarr(avergArr)
-    avergsmoothed = gaussian_filter1d(avergArr, sigma=4)
+    avergsmoothed = gaussian_filter1d(avergArr, sigma=1)
     avergArr[len(avergArr) - 1] = calcAvergBrightness(yArr)
 
     plt.subplot(1, 2, 1)
@@ -78,11 +78,11 @@ def trueLoop(avergArr, image):
     plt.title('Average Brightness over time')
     plt.ylabel('brightness')
     plt.xlabel('Time')
-    # plt.plot(avergArr)
+    #plt.plot(avergArr)
     plt.plot(avergsmoothed)
 
     plt.draw()
     plt.pause(0.001)
     plt.clf()
 
-    cv2.imshow("image", img_gray)
+    #cv2.imshow("image", img_gray)

@@ -2,10 +2,11 @@ import cv2
 from Calibration import StereoCalibration
 from Calibration import MonoCalibration
 import numpy
+from brightnessDetermining import brightnessDiagramRealtime as bdr
 from ImagingApi import ImagingApi
 
 imLeft = cv2.imread("CalibL/imageFrame_0_0.jpg")
-imRight = cv2.imread("CalibR/imageFrame_0_0.jpg")
+imRight = cv2.imread("CalibR/imageFrame_1_0.jpg")
 
 
 
@@ -26,7 +27,7 @@ if(recalibrate):
         img = cv2.imread("CalibL/imageFrame_0_"+str(x)+".jpg")
         calibL.addCheckerBoard(img)
     for x in range(0, rCount):
-        img = cv2.imread("CalibR/imageFrame_0_"+str(x)+".jpg")
+        img = cv2.imread("CalibR/imageFrame_1_"+str(x)+".jpg")
         calibR.addCheckerBoard(img)
 
     print("calibrating...")
@@ -65,7 +66,7 @@ for x in range(0, dualCalCount):
 cv2.waitKey(0)
 
 calib.calibrate(shearing=True)
-#cv2.imshow("rectify", calib.rectifyImg(calib.undistort(imLeft, True), True))
+#cv2.imshow("rectify", calib.re1ctifyImg(calib.undistort(imLeft, True), True))
 #cv2.imshow("rechtify2", calib.rectifyImg(calib.undistort(imRight, False), False))
 cv2.waitKey(0)
 
@@ -74,8 +75,8 @@ cap.keyListener()
 
 minDisp = -16*0
 maxDisp = 16*25
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=5, P2=10000, P1=5000, uniquenessRatio=2)
-
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=8, P2=10000, P1=5000, uniquenessRatio=1)
+avergArr = bdr.setup()
 while True:
     frames = cap.getFrames()
 
@@ -85,10 +86,11 @@ while True:
     iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
     imr = calib.rectifyImg(calib.undistort(imRight, False), False)
 
-    cv2.imshow("L", iml)
-    cv2.imshow("R", imr)
+    cv2.imshow("L", imLeft)
+    cv2.imshow("R", imRight)
 
     disp = bm.compute(iml, imr)
     disp = (disp - (minDisp - 1) * 16) / (((maxDisp - minDisp)) * 16)
+    bdr.trueLoop(avergArr, disp*800)
     cv2.imshow("disp", disp)
     cv2.waitKey(1)
