@@ -1,6 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter1d
+import numpy as np
 
 def resize(img):
     scale_percent = 100  # percent of original size
@@ -12,33 +13,13 @@ def resize(img):
     return resized
 
 def getRowArray(img):
-    width, height = img.shape[:2]
+    height, width = img.shape[:2]
     rowArray = []
-    for x in range(width):
-        rowsum = 0
-        for y in range(height):
-            brightness = img[x][y]
-            rowsum += brightness
-        avgRowbrightness = rowsum/width
+    for x in range(height):
+        rowsum = cv2.sumElems(img[x])[0]
+        avgRowbrightness = rowsum/height
         rowArray.append(round(avgRowbrightness))
     return rowArray
-
-def calcAvergBrightnessArr(arr):
-    sum = 0
-    for x in range(len(arr)):
-        sum += arr[x]
-    averg = round(sum/len(arr))
-    newarr = []
-    for x in range(len(arr)):
-        newarr.append(averg)
-    return newarr
-
-def calcAvergBrightness(arr):
-    sum = 0
-    for x in range(len(arr)):
-        sum += arr[x]
-    averg = round(sum/len(arr))
-    return averg
 
 def setarr(arr):
     for x in range(len(arr)-1):
@@ -50,39 +31,34 @@ def setup():
     plt.figure(figsize=(8, 3), dpi=80)
     return avergArr
 
-def trueLoop(avergArr, image):
-    # Overall Brightness
-    img_gray = image#cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    img_gray = resize(img_gray)
-    yArr = getRowArray(img_gray)
-    ysmoothed = gaussian_filter1d(yArr, sigma=4)
 
-    plt.subplot(1, 2, 2)
-    plt.ylim(top=350)
-    plt.ylim(bottom=0)
-    plt.title('Overall Brightness, starting from the top')
-    plt.ylabel("Brightness")
-    plt.xlabel('Pixelrows from image')
-    #plt.plot(yArr)
-    plt.plot(ysmoothed)
-    # plt.plot(calcAvergBrightnessArr(yArr))
+def setplt(scaleT, scaleB, title, yLabel, xLabel):
+    plt.ylim(top=scaleT)
+    plt.ylim(bottom=scaleB)
+    plt.title(title)
+    plt.ylabel(yLabel)
+    plt.xlabel(xLabel)
 
-    # Realtime Average
-    avergArr = setarr(avergArr)
-    avergsmoothed = gaussian_filter1d(avergArr, sigma=1)
-    avergArr[len(avergArr) - 1] = calcAvergBrightness(yArr)
+def trueLoop(array1, image, smoothed, counter):
+    array1 = setarr(array1)
+    array2 = getRowArray(image)
+    array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
 
-    plt.subplot(1, 2, 1)
-    plt.ylim(top=350)
-    plt.ylim(bottom=0)
-    plt.title('Average Brightness over time')
-    plt.ylabel('brightness')
-    plt.xlabel('Time')
-    #plt.plot(avergArr)
-    plt.plot(avergsmoothed)
+    if smoothed:
+        array1 = gaussian_filter1d(array1, sigma=1)
+        array2 = gaussian_filter1d(array2, sigma=8)
+
+    if counter%20 == 0:
+        plt.clf()
+        #plot 1
+        #plt.subplot(1, 2, 1)
+        setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
+        plt.plot(array1)
+
+        #plot 2
+        #plt.subplot(1, 2, 2)
+        #setplt(350, 0, 'Overall Brightness, starting from the top', 'Brightness', 'Pixelrows from image')
+        #plt.plot(array2)
 
     plt.draw()
-    plt.pause(0.001)
-    plt.clf()
-
-    #cv2.imshow("image", img_gray)
+    plt.pause(0.0000000001)
