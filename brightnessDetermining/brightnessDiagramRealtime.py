@@ -49,6 +49,7 @@ def trueLoop(array1, image, smoothed, counter):
 
     if counter%5 == 0:
         plt.clf()
+        
         # ______plot 1______
         #plt.subplot(1, 2, 1)
         setplt(350, 0, 'Average Brightness over time', 'Brightness', 'Time')
