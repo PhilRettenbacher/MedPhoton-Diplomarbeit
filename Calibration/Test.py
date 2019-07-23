@@ -50,12 +50,13 @@ calib = StereoCalibration.StereoCalibrator((8, 6), imLeft.shape[0:2], calDataL, 
 #cv2.imshow("undistL", calib.undistort(imLeft, True))
 #cv2.imshow("distL", imLeft)
 
-dualCalCount = 28
+dualCalCount = 47
 
 for x in range(0, dualCalCount):
     imLeft = cv2.imread("DualCalib/imageFrame_0_"+str(x)+".jpg")
     imRight = cv2.imread("DualCalib/imageFrame_1_"+str(x)+".jpg")
-    calib.addCheckerBoard(imLeft, imRight, False, False, 0)
+    ret = calib.addCheckerBoard(imLeft, imRight, False, False, 0)
+    print(ret[0] and ret[1])
 
 
 calib.calibrate(shearing=True)
@@ -67,8 +68,8 @@ calib.calibrate(shearing=True)
 cap = ImagingApi.CameraApi(1024, 768)
 cap.keyListener()
 
-minDisp = -16*8
-maxDisp = 16*17
+minDisp = -16*0
+maxDisp = 16*25
 bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=5, P2=20000, P1=100, uniquenessRatio=0, speckleWindowSize=20, speckleRange=300)
 avergArr = bdr.setup()
 counter = 0
@@ -88,7 +89,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(avergArr, disp*800, True, counter, 1, 3)
+    bdr.trueLoop(avergArr, disp*800, True, counter, 1, 3, True)
 
     counter += 1
 
