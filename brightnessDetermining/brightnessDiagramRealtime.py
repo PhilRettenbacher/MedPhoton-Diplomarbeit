@@ -1,6 +1,7 @@
 from scipy.ndimage.filters import gaussian_filter1d
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 import cv2
 
 def resize(img, percent):
@@ -27,8 +28,8 @@ def getRowArray(img):
 
 def setarr(arr):
     try:
-        for x in range(len(arr)-1):
-            arr[x] = arr[x+1]
+        for x in range(len(arr) - 1, -1, -1):
+            arr[x] = arr[x - 1]
         return arr
     except:
         print('\033[1;31m Sequence error! Setup must happen first')
@@ -37,12 +38,13 @@ def setarr(arr):
 def setup():
     array1 = [0] * 100
     array3 = [0] * 100
+    plt.ion()
     plt.figure(figsize=(16, 4.5), dpi=70)
     plt.style.use('fivethirtyeight')
     return array1, array3
 
-def setplt(position, scaleT, scaleB, title, yLabel, xLabel):
-    plt.subplot(position)
+def setplt( scaleT, scaleB, title, yLabel, xLabel):
+
     plt.ylim(top=scaleT)
     plt.ylim(bottom=scaleB)
     plt.title(title)
@@ -57,15 +59,15 @@ def getCoG(arr):
         if i >= (sum/2):
             return x
 
-def trueLoop(arrays, image, smoothed, counter, frequency, mode=3):
+def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
 
     array1 = setarr(arrays[0])
     array3 = setarr(arrays[1])
     array2 = getRowArray(image)
 
     coG = getCoG(array2)
-    array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
-    array3[len(array3) - 1] = coG
+    array3[0] = coG
+    array1[0] = round(cv2.mean(np.array(array2))[0])
 
     if smoothed:
         array1 = gaussian_filter1d(array1, sigma=1)
@@ -76,18 +78,26 @@ def trueLoop(arrays, image, smoothed, counter, frequency, mode=3):
         plt.clf()
 
         # Plot1
-        setplt(131, array1.max()+50, array1.min()-50, 'Average Brightness/Time', 'Brightness', 'Time')
-        plt.plot(array1, 'r', linewidth=2)
+        if mode == 1 or mode == 0:
+            plt.subplot(131)
+            setplt(array1.max()+50, array1.min()-50, 'Average Brightness/Time', 'Brightness', 'Time')
+            plt.xlim(100, 0)
+            plt.plot(array1, 'r', linewidth=2)
 
         # Plot2
-        setplt(132, array3.max()+50, array3.min()-50, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
-        plt.plot(array3, 'm', linewidth=2)
+        if mode == 2 or mode == 0:
+            plt.subplot(132)
+            setplt(array3.max()+50, array3.min()-50, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
+            plt.xlim(100, 0)
+            plt.plot(array3, 'm', linewidth=2)
 
         # Plot3
-        setplt(133, 300, 0, 'Brightness/Row', 'Brightness', 'Pixelrow')
-        plt.scatter(coG, 100, s=50)
-        plt.plot(array2, 'c', linewidth=2)
+        if mode == 3 or mode == 0:
+            plt.subplot(133)
+            setplt(300, 0, 'Brightness/Row', 'Brightness', 'Pixelrow')
+            plt.scatter(coG, 100, s=50)
+            plt.plot(array2, 'c', linewidth=2)
 
         plt.draw()
+        plt.pause(1e-17)
 
-    plt.pause(0.0001)
