@@ -20,7 +20,7 @@ def getRowArray(img):
         rowArray = []
         for x in range(height):
             rowsum = cv2.sumElems(img[x])[0]
-            avgRowbrightness = rowsum/cv2.countNonZero(img[x])
+            avgRowbrightness = rowsum/(cv2.countNonZero(img[x])+1)
             rowArray.append(round(avgRowbrightness))
         return rowArray
     except:

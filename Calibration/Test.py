@@ -68,9 +68,9 @@ calib.calibrate(shearing=True)
 cap = ImagingApi.CameraApi(1024, 768)
 cap.keyListener()
 
-minDisp = -16*0
-maxDisp = 16*25
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=5, P2=20000, P1=100, uniquenessRatio=0, speckleWindowSize=20, speckleRange=300)
+minDisp = -16*15
+maxDisp = 16*5
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=5000, P1=100, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=0, mode=cv2.STEREO_SGBM_MODE_HH4)
 avergArr = bdr.setup()
 counter = 0
 while True:
