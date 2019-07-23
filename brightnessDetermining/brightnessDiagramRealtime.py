@@ -38,8 +38,8 @@ def setarr(arr):
         exit(0)
 
 def setup():
-    array1 = [0] * 100
-    array3 = [0] * 100
+    array1 = [100] * 100
+    array3 = [200] * 100
     plt.ion()
     plt.figure(figsize=(16, 4.5), dpi=70)
     plt.style.use('fivethirtyeight')
@@ -66,6 +66,7 @@ def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
     array1 = setarr(arrays[0])
     array3 = setarr(arrays[1])
     array2 = getRowArray(image)
+    #array4 = np.array([sum(x) for x in zip(*[array1, array3])])
 
     coG = getCoG(array2)
     array3[0] = coG
@@ -79,24 +80,29 @@ def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
     if counter%frequency == 0:
         plt.clf()
 
+        buffer = 10
         # Plot1
         if mode == 1 or mode == 0:
             plt.subplot(131)
-            setplt(np.array(array1).max()+50, np.array(array1).min()-50, 'Average Brightness/Time', 'Brightness', 'Time')
+
+            setplt(np.array(array1).max()+buffer, np.array(array1).min()-buffer, 'Average Brightness/Time', 'Brightness', 'Time')
+
             plt.xlim(100, 0)
             plt.plot(array1, 'r', linewidth=2)
 
         # Plot2
         if mode == 2 or mode == 0:
             plt.subplot(132)
-            setplt(np.array(array3).max()+50, np.array(array3).min()-50, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
+
+            setplt(np.array(array3).max()+buffer, np.array(array3).min()-buffer, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
+
             plt.xlim(100, 0)
             plt.plot(array3, 'm', linewidth=2)
 
         # Plot3
         if mode == 3 or mode == 0:
             plt.subplot(133)
-            setplt(300, 0, 'Brightness/Row', 'Brightness', 'Pixelrow')
+            setplt(np.array(array2).max()+buffer, np.array(array2).min()-buffer, 'Brightness/Row', 'Brightness', 'Pixelrow')
             plt.scatter(coG, 100, s=50)
             plt.plot(array2, 'c', linewidth=2)
 
