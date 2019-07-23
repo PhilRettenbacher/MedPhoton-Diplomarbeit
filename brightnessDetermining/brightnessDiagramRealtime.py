@@ -36,8 +36,8 @@ def setarr(arr):
         exit(0)
 
 def setup():
-    array1 = [0] * 100
-    array3 = [0] * 100
+    array1 = [100] * 100
+    array3 = [200] * 100
     plt.ion()
     plt.figure(figsize=(16, 4.5), dpi=70)
     plt.style.use('fivethirtyeight')
