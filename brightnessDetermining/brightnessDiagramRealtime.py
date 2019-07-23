@@ -82,14 +82,14 @@ def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
         # Plot1
         if mode == 1 or mode == 0:
             plt.subplot(131)
-            setplt(array1.max()+50, array1.min()-50, 'Average Brightness/Time', 'Brightness', 'Time')
+            setplt(np.array(array1).max()+50, np.array(array1).min()-50, 'Average Brightness/Time', 'Brightness', 'Time')
             plt.xlim(100, 0)
             plt.plot(array1, 'r', linewidth=2)
 
         # Plot2
         if mode == 2 or mode == 0:
             plt.subplot(132)
-            setplt(array3.max()+50, array3.min()-50, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
+            setplt(np.array(array3).max()+50, np.array(array3).min()-50, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
             plt.xlim(100, 0)
             plt.plot(array3, 'm', linewidth=2)
 

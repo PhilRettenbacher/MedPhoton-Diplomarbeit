@@ -89,7 +89,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(avergArr, disp*800, True, counter, 1, 3, True)
+    bdr.trueLoop(avergArr, disp*800, False, counter, 1)
 
     counter += 1
 
