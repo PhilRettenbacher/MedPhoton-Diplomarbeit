@@ -35,7 +35,7 @@ def setarr(arr):
         exit(0)
 
 def setup():
-    length = 200
+    length = 80
     array1 = [450] * length
     array3 = [260] * length
     plt.ion()
