@@ -1,7 +1,6 @@
 from scipy.ndimage.filters import gaussian_filter1d
 import matplotlib.pyplot as plt
 import numpy as np
-import time
 import cv2
 
 def resize(img, percent):
@@ -23,7 +22,7 @@ def getRowArray(img):
             rowArray.append(round(avgRowbrightness))
         return rowArray
     except:
-        print('\033[1;31m Input error! Image is no image')
+        print('\033[1;31m Input error! No image found')
         exit(0)
 
 def setarr(arr):
@@ -36,20 +35,24 @@ def setarr(arr):
         exit(0)
 
 def setup():
-    array1 = [100] * 100
-    array3 = [200] * 100
+    length = 200
+    array1 = [450] * length
+    array3 = [260] * length
     plt.ion()
-    plt.figure(figsize=(16, 4.5), dpi=70)
+    #plt.figure(figsize=(16, 4.5), dpi=70)
+    plt.figure(figsize=(15, 12), dpi=60)
     plt.style.use('fivethirtyeight')
     return array1, array3
 
-def setplt( scaleT, scaleB, title, yLabel, xLabel):
-
-    plt.ylim(top=scaleT)
-    plt.ylim(bottom=scaleB)
+def plot(arr, timeAx, title, yLabel, xLabel, color):
+    buffer = 10
+    if timeAx: plt.xlim(len(arr), 0)
+    plt.ylim(top=max(arr)+buffer)
+    plt.ylim(bottom=min(arr)-buffer)
     plt.title(title)
     plt.ylabel(yLabel)
     plt.xlabel(xLabel)
+    plt.plot(arr, color, linewidth=2)
 
 def getCoG(arr):
     sum = cv2.sumElems(np.array(arr))[0]
@@ -59,12 +62,12 @@ def getCoG(arr):
         if i >= (sum/2):
             return x
 
-def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
+def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4):
 
     array1 = setarr(arrays[0])
     array3 = setarr(arrays[1])
     array2 = getRowArray(image)
-    #array4 = np.array([sum(x) for x in zip(*[array1, array3])])
+    array4 = np.array([sum(x) for x in zip(*[array1, array3])])
 
     coG = getCoG(array2)
     array3[0] = coG
@@ -74,32 +77,25 @@ def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
         array1 = gaussian_filter1d(array1, sigma=1)
         array2 = gaussian_filter1d(array2, sigma=8)
         array3 = gaussian_filter1d(array3, sigma=1)
+        array4 = gaussian_filter1d(array4, sigma=2)
 
     if counter%frequency == 0:
         plt.clf()
 
-        buffer = 10
-        # Plot1
-        if mode == 1 or mode == 0:
-            plt.subplot(131)
-            setplt(np.array(array1).max()+buffer, np.array(array1).min()-buffer, 'Average Brightness/Time', 'Brightness', 'Time')
-            plt.xlim(100, 0)
-            plt.plot(array1, 'r', linewidth=2)
-
-        # Plot2
-        if mode == 2 or mode == 0:
-            plt.subplot(132)
-            setplt(np.array(array3).max()+buffer, np.array(array3).min()-buffer, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
-            plt.xlim(100, 0)
-            plt.plot(array3, 'm', linewidth=2)
-
-        # Plot3
-        if mode == 3 or mode == 0:
-            plt.subplot(133)
-            setplt(np.array(array2).max()+buffer, np.array(array2).min()-buffer, 'Brightness/Row', 'Brightness', 'Pixelrow')
-            plt.scatter(coG, 100, s=50)
-            plt.plot(array2, 'c', linewidth=2)
+        if arr1:
+            plt.subplot(221)
+            plot(array1, True, 'Average Brightness/Time', 'Brightness', 'Time', 'r')
+        if arr2:
+            plt.subplot(222)
+            plot(array3, True, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time', 'm')
+        if arr3:
+            plt.subplot(223)
+            plot(array2, False, 'Brightness/Row', 'Brightness', 'Pixelrow', 'c')
+            plt.scatter(coG, array1[0], s=50)
+        if arr4:
+            plt.subplot(224)
+            plot(array4, True, 'Sum/Time', 'Sum', 'Time', 'b')
 
         plt.draw()
-        plt.pause(1e-17)
+        plt.pause(0.001)
 
