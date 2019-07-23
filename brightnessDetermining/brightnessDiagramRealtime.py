@@ -1,6 +1,7 @@
 from scipy.ndimage.filters import gaussian_filter1d
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 import cv2
 
 def resize(img, percent):
@@ -13,33 +14,46 @@ def resize(img, percent):
     return resized
 
 def getRowArray(img):
-    height, width = img.shape[:2]
-    rowArray = []
-    for x in range(height):
-        rowsum = cv2.sumElems(img[x])[0]
-        avgRowbrightness = rowsum/cv2.countNonZero(img[x])
-        rowArray.append(round(avgRowbrightness))
-    return rowArray
+
+    try:
+        height, width = img.shape[:2]
+        rowArray = []
+        for x in range(height):
+            rowsum = cv2.sumElems(img[x])[0]
+            avgRowbrightness = rowsum/cv2.countNonZero(img[x])
+            rowArray.append(round(avgRowbrightness))
+        return rowArray
+    except:
+        print('\033[1;31m Input error! Image is no image')
+        exit(0)
+
 
 def setarr(arr):
-    for x in range(len(arr)-1):
-        arr[x] = arr[x+1]
-    return arr
+    try:
+        for x in range(len(arr) - 1, -1, -1):
+            arr[x] = arr[x - 1]
+        return arr
+    except:
+        print('\033[1;31m Sequence error! Setup must happen first')
+        exit(0)
 
 def setup():
-    avergArr = [100] * 100
-    plt.figure(figsize=(11, 4.5), dpi=70)
+    array1 = [0] * 100
+    array3 = [0] * 100
+    plt.ion()
+    plt.figure(figsize=(16, 4.5), dpi=70)
     plt.style.use('fivethirtyeight')
-    return avergArr
+    return array1, array3
 
-def setplt(scaleT, scaleB, title, yLabel, xLabel):
+def setplt( scaleT, scaleB, title, yLabel, xLabel):
+
     plt.ylim(top=scaleT)
     plt.ylim(bottom=scaleB)
     plt.title(title)
     plt.ylabel(yLabel)
     plt.xlabel(xLabel)
 
-def getMainEmphasis(arr):
+def getCoG(arr):
     sum = cv2.sumElems(np.array(arr))[0]
     i = 0
     for x in range(len(arr)):
@@ -47,53 +61,46 @@ def getMainEmphasis(arr):
         if i >= (sum/2):
             return x
 
+def trueLoop(arrays, image, smoothed, counter, frequency, mode=0):
 
-def trueLoop(array1, image, smoothed, counter, frequency, mode, Emphasis):
-    if smoothed != False and smoothed != True: print('\033[1;31m Input error! smoothed must be True or False'), exit(0)
-    if mode != 1 and mode != 2 and mode != 3: print('\033[1;31m Input error! Mode must be 1, 2 or 3'), exit(0)
+    array1 = setarr(arrays[0])
+    array3 = setarr(arrays[1])
+    array2 = getRowArray(image)
 
-    try:
-        array1 = setarr(array1)
-    except:
-        print('\033[1;31m Sequence error! Setup must happen first')
-        exit(0)
-    try:
-        array2 = getRowArray(image)
-    except:
-        print('\033[1;31m Input error! Image is no image')
-        exit(0)
-    emphPoint = getMainEmphasis(array2)
-    if not Emphasis:
-        array1[len(array1) - 1] = round(cv2.mean(np.array(array2))[0])
-    else:
-        array1[len(array1) - 1] = emphPoint
+    coG = getCoG(array2)
+    array3[0] = coG
+    array1[0] = round(cv2.mean(np.array(array2))[0])
 
     if smoothed:
         array1 = gaussian_filter1d(array1, sigma=1)
         array2 = gaussian_filter1d(array2, sigma=8)
-    try:
-        if counter%frequency == 0:
-            plt.clf()
-            if mode == 1 or mode == 3:
-                if mode == 3:
-                    plt.subplot(121)
+        array3 = gaussian_filter1d(array3, sigma=1)
 
-                setplt(array1.max()+50, array1.min()-50, 'Brightness/Time', 'Brightness', 'Time')
+    if counter%frequency == 0:
+        plt.clf()
 
-                plt.plot(array1, 'm', linewidth=2)
-            if mode == 2 or mode == 3:
-                if mode == 3:
-                    plt.subplot(122)
+        # Plot1
+        if mode == 1 or mode == 0:
+            plt.subplot(131)
+            setplt(array1.max()+50, array1.min()-50, 'Average Brightness/Time', 'Brightness', 'Time')
+            plt.xlim(100, 0)
+            plt.plot(array1, 'r', linewidth=2)
 
-                setplt(array2.max()+50, array2.min()-50, 'Brightness/Row', 'Brightness', 'Pixelrows from image')
-                plt.scatter(emphPoint, 100, s=200)
+        # Plot2
+        if mode == 2 or mode == 0:
+            plt.subplot(132)
+            setplt(array3.max()+50, array3.min()-50, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
+            plt.xlim(100, 0)
+            plt.plot(array3, 'm', linewidth=2)
 
-                plt.plot(array2, 'c', linewidth=2)
-            plt.draw()
-    except:
-        print('\033[1;31m Division by zero error! Frequency must not be zero')
-        exit(0)
+        # Plot3
+        if mode == 3 or mode == 0:
+            plt.subplot(133)
+            setplt(300, 0, 'Brightness/Row', 'Brightness', 'Pixelrow')
+            plt.scatter(coG, 100, s=50)
+            plt.plot(array2, 'c', linewidth=2)
 
-    print(getMainEmphasis(array2))
 
-    plt.pause(0.0001)
+        plt.draw()
+        plt.pause(1e-17)
+
