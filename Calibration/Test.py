@@ -69,7 +69,7 @@ calib.calibrate(shearing=True)
 #cv2.imshow("rechtify2", calib.rectifyImg(calib.undistort(imRight, False), False))
 #cv2.waitKey(0)
 
-cap = ImagingApi.CameraApi(1024, 768)
+cap = ImagingApi.CameraApi(640, 480)
 cap.keyListener()
 
 minDisp = -16*15
@@ -79,8 +79,8 @@ avergArr = bdr.setup()
 counter = 0
 while True:
     imLeft, imRight = cap.getFrames()
-    imLeft = bdr.resize(imLeft, 50)
-    imRight = bdr.resize(imRight, 50)
+    #imLeft = bdr.resize(imLeft, 50)
+    #imRight = bdr.resize(imRight, 50)
 
     iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
     imr = calib.rectifyImg(calib.undistort(imRight, False), False)
@@ -93,7 +93,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(avergArr, disp*800, True, counter, 1, True, True, False, True)
+    bdr.trueLoop(avergArr, disp*800, True, counter, 1, True, True, True, True)
 
     counter += 1
 

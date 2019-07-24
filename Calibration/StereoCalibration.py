@@ -105,8 +105,8 @@ class StereoCalibrator:
         R1 = K_inverse.dot(H1).dot(K)
         R2 = K_inverse.dot(H2).dot(K)
 
-        newMtx1 = cv2.getDefaultNewCameraMatrix(self.calibL[1], self.imgSize, False)
-        newMtx2 = cv2.getDefaultNewCameraMatrix(self.calibR[1], self.imgSize, False)
+        newMtx1, roi = cv2.getOptimalNewCameraMatrix(self.calibL[1], self.calibL[2], self.imgSize, 0)
+        newMtx2, roi = cv2.getOptimalNewCameraMatrix(self.calibR[1], self.calibR[2], self.imgSize, 0)
         #rot, trans, plan = cv2.decomposeHomographyMat(H1, self.internalMonoCal.mtx)
         self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(self.calibL[1], None, R1, newMtx1, self.imgSize, cv2.CV_16SC2)
         self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(self.calibR[1], None, R2, newMtx2, self.imgSize, cv2.CV_16SC2)
