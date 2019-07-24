@@ -76,10 +76,10 @@ def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4
     array1[0] = round(cv2.mean(np.array(array2))[0])
 
     if smoothed:
-        array1 = gaussian_filter1d(array1, sigma=1)
+        array1 = gaussian_filter1d(array1, sigma=2)
         array2 = gaussian_filter1d(array2, sigma=8)
-        array3 = gaussian_filter1d(array3, sigma=1)
-        array4 = gaussian_filter1d(array4, sigma=2)
+        array3 = gaussian_filter1d(array3, sigma=3)
+        array4 = gaussian_filter1d(array4, sigma=3)
 
     if counter%frequency == 0:
         plt.clf()

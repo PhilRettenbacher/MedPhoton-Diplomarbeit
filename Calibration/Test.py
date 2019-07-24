@@ -50,6 +50,10 @@ calib = StereoCalibration.StereoCalibrator((8, 6), imLeft.shape[0:2], calDataL, 
 #cv2.imshow("undistL", calib.undistort(imLeft, True))
 #cv2.imshow("distL", imLeft)
 
+#cv2.imshow("a",imLeft)
+#cv2.imshow("n", cv2.undistort(imLeft, calDataL[1], calDataL[2]))
+#cv2.waitKey(0)
+
 dualCalCount = 47
 
 for x in range(0, dualCalCount):
@@ -89,7 +93,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(avergArr, disp*800, False, counter, 1)
+    bdr.trueLoop(avergArr, disp*800, True, counter, 1, True, True, False, True)
 
     counter += 1
 
