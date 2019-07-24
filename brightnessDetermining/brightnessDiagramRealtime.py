@@ -60,12 +60,10 @@ def getCoG(arr):
             return x
 
 def scaleArr(arr):
-    #arr = [i - round(cv2.mean(np.array(arr))[0]) for i in arr]
     arr = np.interp(arr, (np.array(arr).min(), np.array(arr).max()), (-1, +1))
     return arr
 
 def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4):
-
     array1 = setarr(arrays[0])
     array3 = setarr(arrays[1])
     array2 = getRowArray(image)
@@ -94,17 +92,20 @@ def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4
             plt.subplot(221)
             plot(2, -2, 'Average Brightness/Time', 'Brightness', 'Time')
             plt.xlim(len(array1), 0)
-            plt.plot(array1, 'y', linewidth=2)
+            plt.plot(array1, 'r', linewidth=2, label='averg. brightness')
+            plt.legend(loc=1, fontsize=20)
         if arr2:
             plt.subplot(222)
             plot(2, -2, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
             plt.xlim(len(array3), 0)
-            plt.plot(array3, 'c', linewidth=2)
+            plt.plot(array3, 'c', linewidth=2, label='center of gravity')
+            plt.legend(loc=1, fontsize=20)
         if arr3:
             plt.subplot(223)
             plot(2, -2, 'Sum/Time', 'Sum', 'Time')
             plt.xlim(len(array4), 0)
-            plt.plot(array4, 'r', linewidth=2)
+            plt.plot(array4, 'k', linewidth=2, label='sum')
+            plt.legend(loc=1, fontsize=20)
         if arr4:
             plt.subplot(224)
             #plot(300, 0, 'Brightness/Row', 'Brightness', 'Pixelrow')
@@ -113,10 +114,10 @@ def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4
 
             plot(2, -2, 'Everything/Time', 'Brightness, Cog, Sum', 'Time')
             plt.xlim(len(array4), 0)
-            plt.plot(array1, 'y', linewidth=2)
-            plt.plot(array3, 'c', linewidth=2)
-            plt.plot(array4, 'r', linewidth=2)
-
+            plt.plot(array1, 'r', linewidth=2, label='averg. brightness')
+            plt.plot(array3, 'c', linewidth=2, label='center of gravity')
+            plt.plot(array4, 'k', linewidth=2, label='sum')
+            plt.legend(loc=1, fontsize=13)
 
         plt.draw()
         plt.pause(0.001)

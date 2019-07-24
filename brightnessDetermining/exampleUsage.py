@@ -12,7 +12,7 @@ while True:
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     a = datetime.datetime.now()
-    bdr.trueLoop(arrays, image, True, counter, 1, True, True, True, True)
+    bdr.trueLoop(arrays, image, True, counter, 10, True, True, True, True)
     b = datetime.datetime.now()
     print("Berechnungszeit: " + str(b - a))
     counter += 1
