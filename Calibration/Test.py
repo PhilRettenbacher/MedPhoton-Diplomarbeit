@@ -2,6 +2,7 @@ import cv2
 from Calibration import StereoCalibration
 from Calibration import MonoCalibration
 import numpy
+import datetime
 from brightnessDetermining import brightnessDiagramRealtime as bdr
 from ImagingApi import ImagingApi
 
@@ -72,12 +73,16 @@ calib.calibrate(shearing=True)
 cap = ImagingApi.CameraApi(640, 480)
 cap.keyListener()
 
+
 minDisp = -16*15
 maxDisp = 16*5
 bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=5000, P1=100, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=0, mode=cv2.STEREO_SGBM_MODE_HH4)
-avergArr = bdr.setup()
+arrays = bdr.setup()
+
 counter = 0
+sec = 0
 while True:
+    a = datetime.datetime.now().strftime('%S.%f')
     imLeft, imRight = cap.getFrames()
     #imLeft = bdr.resize(imLeft, 50)
     #imRight = bdr.resize(imRight, 50)
@@ -93,12 +98,14 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(avergArr, disp*800, True, counter, 1, True, True, True, True)
+    bdr.trueLoop(arrays, sec, disp, True, counter, 1, True, True, True, True)
 
     counter += 1
 
     cv2.imshow("disp", disp)
     cv2.waitKey(1)
+    b = datetime.datetime.now().strftime('%S.%f')
+    sec = float(b) - float(a)
 
 # calib.rectifyImg:	~0.07 sec
 # bm.compute:		~0.28 sec
