@@ -35,24 +35,21 @@ def setarr(arr):
         exit(0)
 
 def setup():
-    length = 80
-    array1 = [450] * length
-    array3 = [260] * length
+    length = 100
+    array1 = [0.5] * length
+    array3 = [0.5] * length
     plt.ion()
     #plt.figure(figsize=(16, 4.5), dpi=70)
     plt.figure(figsize=(15, 12), dpi=60)
     plt.style.use('fivethirtyeight')
     return array1, array3
 
-def plot(arr, timeAx, title, yLabel, xLabel, color):
-    buffer = 10
-    if timeAx: plt.xlim(len(arr), 0)
-    plt.ylim(top=max(arr)+buffer)
-    plt.ylim(bottom=min(arr)-buffer)
+def plot(scaleT, scaleB, title, yLabel, xLabel):
+    plt.ylim(top=scaleT)
+    plt.ylim(bottom=scaleB)
     plt.title(title)
     plt.ylabel(yLabel)
     plt.xlabel(xLabel)
-    plt.plot(arr, color, linewidth=2)
 
 def getCoG(arr):
     sum = cv2.sumElems(np.array(arr))[0]
@@ -62,6 +59,11 @@ def getCoG(arr):
         if i >= (sum/2):
             return x
 
+def scaleArr(arr):
+    #arr = [i - round(cv2.mean(np.array(arr))[0]) for i in arr]
+    arr = np.interp(arr, (np.array(arr).min(), np.array(arr).max()), (-1, +1))
+    return arr
+
 def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4):
 
     array1 = setarr(arrays[0])
@@ -69,9 +71,15 @@ def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4
     array2 = getRowArray(image)
     array4 = np.array([sum(x) for x in zip(*[array1, array3])])
 
+    #array2 = [i - round(cv2.mean(np.array(array2))[0]) for i in array2]
+
     coG = getCoG(array2)
     array3[0] = coG
     array1[0] = round(cv2.mean(np.array(array2))[0])
+
+    array1 = scaleArr(array1)
+    array3 = scaleArr(array3)
+    array4 = scaleArr(array4)
 
     if smoothed:
         array1 = gaussian_filter1d(array1, sigma=1)
@@ -81,20 +89,34 @@ def trueLoop(arrays, image, smoothed, counter, frequency, arr1, arr2, arr3, arr4
 
     if counter%frequency == 0:
         plt.clf()
-
+        #buffer = 2
         if arr1:
             plt.subplot(221)
-            plot(array1, True, 'Average Brightness/Time', 'Brightness', 'Time', 'r')
+            plot(2, -2, 'Average Brightness/Time', 'Brightness', 'Time')
+            plt.xlim(len(array1), 0)
+            plt.plot(array1, 'y', linewidth=2)
         if arr2:
             plt.subplot(222)
-            plot(array3, True, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time', 'm')
+            plot(2, -2, 'CenterOfGravity/Time', '(CoG)Pixelrow', 'Time')
+            plt.xlim(len(array3), 0)
+            plt.plot(array3, 'c', linewidth=2)
         if arr3:
             plt.subplot(223)
-            plot(array2, False, 'Brightness/Row', 'Brightness', 'Pixelrow', 'c')
-            plt.scatter(coG, array1[0], s=50)
+            plot(2, -2, 'Sum/Time', 'Sum', 'Time')
+            plt.xlim(len(array4), 0)
+            plt.plot(array4, 'r', linewidth=2)
         if arr4:
             plt.subplot(224)
-            plot(array4, True, 'Sum/Time', 'Sum', 'Time', 'b')
+            #plot(300, 0, 'Brightness/Row', 'Brightness', 'Pixelrow')
+            #plt.scatter(coG, 100, s=50)
+            #plt.plot(array2, 'k', linewidth=2)
+
+            plot(2, -2, 'Everything/Time', 'Brightness, Cog, Sum', 'Time')
+            plt.xlim(len(array4), 0)
+            plt.plot(array1, 'y', linewidth=2)
+            plt.plot(array3, 'c', linewidth=2)
+            plt.plot(array4, 'r', linewidth=2)
+
 
         plt.draw()
         plt.pause(0.001)
