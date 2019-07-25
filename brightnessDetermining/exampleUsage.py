@@ -14,7 +14,7 @@ while True:
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
-    bdr.trueLoop(arrays, sec, image, True, counter, 1, True, True, True, True)
+    bdr.trueLoop(arrays, sec, image, True, counter, 1, False, False, False, True)
 
 
     counter += 1
