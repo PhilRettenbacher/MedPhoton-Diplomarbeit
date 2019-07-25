@@ -39,7 +39,7 @@ def setarr(arr):
         exit(0)
 
 def setup():
-    length = 100
+    length = 10
     array1 = []
     array3 = []
     plt.ion()
@@ -78,7 +78,7 @@ def trueLoop(arrays,sec, image, smoothed, counter, frequency, arr1, arr2, arr3, 
     #array2 = [i - round(cv2.mean(np.array(array2))[0]) for i in array2]
 
     coG = getCoG(array2)
-    if len(array1) <= 100:
+    if len(array1) <= 50:
         array1.insert(0, round(cv2.mean(np.array(array2))[0]))
         array3.insert(0, coG)
     else:

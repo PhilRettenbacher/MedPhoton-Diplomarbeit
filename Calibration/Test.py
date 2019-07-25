@@ -55,7 +55,7 @@ calib = StereoCalibration.StereoCalibrator((8, 6), imLeft.shape[0:2], calDataL, 
 #cv2.imshow("n", cv2.undistort(imLeft, calDataL[1], calDataL[2]))
 #cv2.waitKey(0)
 
-dualCalCount = 47
+dualCalCount = 8
 
 for x in range(0, dualCalCount):
     imLeft = cv2.imread("DualCalib/imageFrame_0_"+str(x)+".jpg")
@@ -76,7 +76,7 @@ cap.keyListener()
 
 minDisp = -16*15
 maxDisp = 16*5
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=5000, P1=100, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=0, mode=cv2.STEREO_SGBM_MODE_HH4)
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=5000, P1=0, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=35)
 arrays = bdr.setup()
 
 counter = 0
@@ -98,7 +98,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(arrays, sec, disp, True, counter, 1, True, True, True, True)
+    bdr.trueLoop(arrays, sec, disp*1000, True, counter, 1, False, False, False, True)
 
     counter += 1
 
