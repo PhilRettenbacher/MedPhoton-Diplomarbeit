@@ -55,9 +55,10 @@ calib = StereoCalibration.StereoCalibrator((8, 6), imLeft.shape[0:2], calDataL, 
 #cv2.imshow("n", cv2.undistort(imLeft, calDataL[1], calDataL[2]))
 #cv2.waitKey(0)
 
-dualCalCount = 8
+dualCalCount = 7
+dualCalStart = 0
 
-for x in range(0, dualCalCount):
+for x in range(dualCalStart, dualCalCount):
     imLeft = cv2.imread("DualCalib/imageFrame_0_"+str(x)+".jpg")
     imRight = cv2.imread("DualCalib/imageFrame_1_"+str(x)+".jpg")
     ret = calib.addCheckerBoard(imLeft, imRight, False, False, 0)
@@ -76,7 +77,7 @@ cap.keyListener()
 
 minDisp = -16*15
 maxDisp = 16*5
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=5000, P1=0, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=35)
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=7000, P1=500, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=3)
 arrays = bdr.setup()
 
 counter = 0
@@ -89,6 +90,9 @@ while True:
 
     iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
     imr = calib.rectifyImg(calib.undistort(imRight, False), False)
+
+    #iml = cv2.warpPerspective(iml, calib.H1, calib.imgSize)
+    #imr = cv2.warpPerspective(imr, calib.H2, calib.imgSize)
 
     cv2.imshow("L", iml)
     cv2.imshow("R", imr)

@@ -74,7 +74,7 @@ class StereoCalibrator:
         x2 = np.array(self.R2DPoints)
         x2 = x2.reshape((x2.shape[0] * x2.shape[1], 1, 2))
 
-        F, F_mask = cv2.findFundamentalMat(x1, x2, method=cv2.FM_RANSAC, ransacReprojThreshold=5)
+        F, F_mask = cv2.findFundamentalMat(x1, x2, method=cv2.FM_RANSAC, ransacReprojThreshold=1, confidence=0.99)
 
         # Select only inlier points
         F_mask = F_mask.flatten()
@@ -89,7 +89,7 @@ class StereoCalibrator:
 
         # Calculate Homogeneous matrix transform given features and fundamental matrix
 
-        retval, H1, H2 = cv2.stereoRectifyUncalibrated(x1.ravel(), x2.ravel(), F, self.imgSize, threshold=1)
+        retval, self.H1, self.H2 = cv2.stereoRectifyUncalibrated(x1.ravel(), x2.ravel(), F, self.imgSize, threshold=1)
 
         if (retval == False):
             print("ERROR: stereoRectifyUncalibrated failed")
@@ -97,19 +97,19 @@ class StereoCalibrator:
 
         # Apply a shearing transform to homography matrices
         if shearing:
-            S = self.rectify_shearing(H1, H2, self.imgSize[0], self.imgSize[1])
-            H1 = S.dot(H1)
+            S = self.rectify_shearing(self.H1, self.H2, self.imgSize[0], self.imgSize[1])
+            self.H1 = S.dot(self.H1)
 
         # Compute the rectification transform
         K_inverse = np.linalg.inv(K)
-        R1 = K_inverse.dot(H1).dot(K)
-        R2 = K_inverse.dot(H2).dot(K)
+        R1 = K_inverse.dot(self.H1).dot(K)
+        R2 = K_inverse.dot(self.H2).dot(K)
 
         newMtx1, roi = cv2.getOptimalNewCameraMatrix(self.calibL[1], self.calibL[2], self.imgSize, 1, centerPrincipalPoint=False)
         newMtx2, roi = cv2.getOptimalNewCameraMatrix(self.calibR[1], self.calibR[2], self.imgSize, 1, centerPrincipalPoint=False)
         #rot, trans, plan = cv2.decomposeHomographyMat(H1, self.internalMonoCal.mtx)
-        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(self.calibL[1], None, R1, newMtx1[:, :3], self.imgSize, cv2.CV_16SC2)
-        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(self.calibR[1], None, R2, newMtx1[:, :3], self.imgSize, cv2.CV_16SC2)
+        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(self.calibL[1], None, R1, None, self.imgSize, cv2.CV_16SC2)
+        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(self.calibR[1], None, R2, None, self.imgSize, cv2.CV_16SC2)
 
         # Find an unused colour to build a border mask
         # Note: Assuming that the union of both image intensity sets do not exhaust the 8 bit range
