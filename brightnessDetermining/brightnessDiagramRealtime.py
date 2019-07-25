@@ -31,18 +31,16 @@ def getRowArray(img):
 
 def setarr(arr):
     try:
-        for x in range(len(arr) - 1, -1, -1):
-            arr[x] = arr[x - 1]
+        for x in range(len(arr)-2, -1, -1):
+            arr[x+1] = arr[x]
         return arr
     except:
         print('\033[1;31m Sequence error! Setup must happen first')
         exit(0)
 
 def setup():
-    length = 10
     array1 = []
     array3 = []
-    plt.ion()
     plt.figure("YourWindowName", figsize=(15, 12), dpi=60)
     plt.style.use('fivethirtyeight')
     return array1, array3
@@ -78,10 +76,14 @@ def trueLoop(arrays,sec, image, smoothed, counter, frequency, arr1, arr2, arr3, 
     #array2 = [i - round(cv2.mean(np.array(array2))[0]) for i in array2]
 
     coG = getCoG(array2)
-    if len(array1) <= 50:
+
+    if len(array1) < 50:
+        print("insert")
+
         array1.insert(0, round(cv2.mean(np.array(array2))[0]))
         array3.insert(0, coG)
     else:
+        print("change")
         array1[0] = round(cv2.mean(np.array(array2))[0])
         array3[0] = coG
         array1 = setarr(array1)
