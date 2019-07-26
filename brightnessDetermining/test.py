@@ -30,3 +30,4 @@ for i in range(1, 2000):
         line.set_ydata(np.sin(j*x + i/10.0))
         ax.draw_artist(line)
         fig.canvas.blit(ax.bbox)
+

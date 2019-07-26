@@ -173,3 +173,4 @@ class brightnessDiagramRealtime:
                 plt.legend(loc=1, fontsize=10)
             plt.draw()
             plt.pause(0.001)
+
