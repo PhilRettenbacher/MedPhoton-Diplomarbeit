@@ -17,6 +17,7 @@ recalibrate = False
 calDataL = None
 calDataR = None
 
+#calculate the intrinsic and distortion parameters
 if(recalibrate):
 
     lCount = 67
@@ -48,16 +49,11 @@ else:
 
 calib = StereoCalibration.StereoCalibrator((8, 6), imLeft.shape[0:2], calDataL, calDataR)
 
-#cv2.imshow("undistL", calib.undistort(imLeft, True))
-#cv2.imshow("distL", imLeft)
 
-#cv2.imshow("a",imLeft)
-#cv2.imshow("n", cv2.undistort(imLeft, calDataL[1], calDataL[2]))
-#cv2.waitKey(0)
-
-dualCalCount = 7
+dualCalCount = 34
 dualCalStart = 0
 
+#calculate the rectification maps
 for x in range(dualCalStart, dualCalCount):
     imLeft = cv2.imread("DualCalib/imageFrame_0_"+str(x)+".jpg")
     imRight = cv2.imread("DualCalib/imageFrame_1_"+str(x)+".jpg")
@@ -67,9 +63,6 @@ for x in range(dualCalStart, dualCalCount):
 
 calib.calibrate(shearing=True)
 
-#cv2.imshow("rectify", calib.re1ctifyImg(calib.undistort(imLeft, True), True))
-#cv2.imshow("rechtify2", calib.rectifyImg(calib.undistort(imRight, False), False))
-#cv2.waitKey(0)
 
 cap = ImagingApi.CameraApi(640, 480)
 cap.keyListener()
@@ -77,7 +70,7 @@ cap.keyListener()
 
 minDisp = -16*15
 maxDisp = 16*5
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=7000, P1=500, uniquenessRatio=0, speckleWindowSize=500, speckleRange=16, disp12MaxDiff=64, preFilterCap=3)
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=3000, P1=1500, uniquenessRatio=0, speckleWindowSize=100, speckleRange=16, disp12MaxDiff=64, preFilterCap=3)
 arrays = bdr.setup()
 
 counter = 0
@@ -85,14 +78,10 @@ sec = 0
 while True:
     a = datetime.datetime.now().strftime('%S.%f')
     imLeft, imRight = cap.getFrames()
-    #imLeft = bdr.resize(imLeft, 50)
-    #imRight = bdr.resize(imRight, 50)
 
+    #rectify images
     iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
     imr = calib.rectifyImg(calib.undistort(imRight, False), False)
-
-    #iml = cv2.warpPerspective(iml, calib.H1, calib.imgSize)
-    #imr = cv2.warpPerspective(imr, calib.H2, calib.imgSize)
 
     cv2.imshow("L", iml)
     cv2.imshow("R", imr)
@@ -102,7 +91,7 @@ while True:
 
     # Graphics
 
-    bdr.trueLoop(arrays, sec, disp*1000, True, counter, 1, False, False, False, True)
+    bdr.trueLoop(arrays, sec, disp*1000, counter, 1, scaling=False, arr1=True, arr2=True, arr3=True, arr4=True)
 
     counter += 1
 

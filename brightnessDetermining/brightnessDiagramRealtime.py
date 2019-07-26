@@ -100,10 +100,10 @@ def trueLoop(arrays, sec, image, counter, smoothed = True, scaling = False, freq
             buffer = 2
         else: buffer = 50
         if smoothed:
-            array1 = gaussian_filter1d(array1, sigma=2)
-            array2 = gaussian_filter1d(array2, sigma=8)
-            array3 = gaussian_filter1d(array3, sigma=2)
-            array4 = gaussian_filter1d(array4, sigma=2)
+            array1 = gaussian_filter1d(array1, sigma=1)
+            array2 = gaussian_filter1d(array2, sigma=1)
+            array3 = gaussian_filter1d(array3, sigma=1)
+            array4 = gaussian_filter1d(array4, sigma=1)
         array1 = np.around(array1, decimals=2)
         array2 = np.around(array2, decimals=2)
         array3 = np.around(array3, decimals=2)

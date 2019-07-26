@@ -63,7 +63,6 @@ class StereoCalibrator:
         self.internalMonoCal.calibrateCamera()
         calData = self.internalMonoCal.getCalibData()
         K = calData[1]
-        d = calData[2]
         ##### ##### ##### ##### #####
         ##### Compute Fundamental matrix
         ##### ##### ##### ##### #####
@@ -100,63 +99,27 @@ class StereoCalibrator:
             S = self.rectify_shearing(self.H1, self.H2, self.imgSize[0], self.imgSize[1])
             self.H1 = S.dot(self.H1)
 
+
+        K1 = self.calibL[1]
+        K2 = self.calibR[1]
+
+        #calculates the X-shift of the left rectification
+        point = cv2.perspectiveTransform(np.array([[[0., 0.]]]), self.H1)
+
+        #transforms H1 to compensate for the shift
+        self.H1 = np.array([[1, 0, -point[0, 0, 0]], [0, 1, 0], [0, 0, 1]]).dot(self.H1)
+        K1_inverse = np.linalg.inv(K1)
+        K2_inverse = np.linalg.inv(K2)
+        R1 = K1_inverse.dot(self.H1).dot(K1)
+        R2 = K2_inverse.dot(self.H2).dot(K2)
+
         # Compute the rectification transform
-        K_inverse = np.linalg.inv(K)
-        R1 = K_inverse.dot(self.H1).dot(K)
-        R2 = K_inverse.dot(self.H2).dot(K)
 
         newMtx1, roi = cv2.getOptimalNewCameraMatrix(self.calibL[1], self.calibL[2], self.imgSize, 1, centerPrincipalPoint=False)
         newMtx2, roi = cv2.getOptimalNewCameraMatrix(self.calibR[1], self.calibR[2], self.imgSize, 1, centerPrincipalPoint=False)
-        #rot, trans, plan = cv2.decomposeHomographyMat(H1, self.internalMonoCal.mtx)
-        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(self.calibL[1], None, R1, None, self.imgSize, cv2.CV_16SC2)
-        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(self.calibR[1], None, R2, None, self.imgSize, cv2.CV_16SC2)
 
-        # Find an unused colour to build a border mask
-        # Note: Assuming that the union of both image intensity sets do not exhaust the 8 bit range
-        # Fortunately, if the set is empty, set.pop() will throw a runtime error
-
-        #palette1 = set(image1.flatten())
-        #palette2 = set(image2.flatten())
-
-        #colours = set(range(256))
-
-        # key1 = colours.difference(palette1).pop()
-        # key2 = colours.difference(palette2).pop()
-
-        ##### ##### ##### ##### #####
-        ##### Apply Rectification Transform
-        ##### ##### ##### ##### #####
-
-        # TODO: Determine which interpolation method is best
-        #INTERPOLATION = cv2.INTER_LINEAR  # cv2.INTER_LINEAR
-
-        #rectified1 = cv2.remap(image1, mapx1, mapy1,
-                               #interpolation=INTERPOLATION,
-                               #borderMode=cv2.BORDER_CONSTANT,
-                               #)
-
-        #rectified2 = cv2.remap(image2, mapx2, mapy2,
-                               #interpolation=INTERPOLATION,
-                               #borderMode	= cv2.BORDER_CONSTANT,
-                               #)
-
-        # Build the mask, used for cropping out noise
-
-        #rectified1_mask = numpy.ndarray(image_shape, dtype = bool)
-        #rectified2_mask = numpy.ndarray(image_shape, dtype = bool)
-
-        #rectified1_mask.fill(True)
-        #rectified2_mask.fill(True)
-
-        # rectified1_mask[rectified1 == key1] = False
-        # rectified2_mask[rectified2 == key2] = False
-
-        # numpy.save("mask1.npy", rectified1_mask)
-        # numpy.save("mask2.npy", rectified2_mask)
-
-        # All done!
-
-        #return rectified1, rectified2, rectified1_mask, rectified2_mask, mapx1, mapy1, mapx2, mapy2
+        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(newMtx1, None, R1, None, self.imgSize, cv2.CV_16SC2)
+        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(newMtx2, None, R2, None, self.imgSize, cv2.CV_16SC2)
 
     def rectifyImg(self, img, isLeft):
         if(isLeft):
