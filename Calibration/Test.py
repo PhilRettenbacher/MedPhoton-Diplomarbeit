@@ -63,6 +63,14 @@ for x in range(dualCalStart, dualCalCount):
 
 calib.calibrate(shearing=True)
 
+imLeft = cv2.imread("DualCalib/imageFrame_0_0.jpg")
+imRight = cv2.imread("DualCalib/imageFrame_1_0.jpg")
+iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
+imr = calib.rectifyImg(calib.undistort(imRight, False), False)
+
+cv2.imshow("L", iml)
+cv2.imshow("R", imr)
+cv2.waitKey(0)
 
 cap = ImagingApi.CameraApi(640, 480)
 cap.keyListener()
