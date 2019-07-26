@@ -8,10 +8,12 @@ import cv2
 
 class brightnessDiagramRealtime:
     def __init__(self):
-        self.oldtime=0
+        self.oldtimeF = 0
+        self.oldtimeP = 0
         self.array1 = np.array([])
         self.array2 = np.array([])
         self.array3 = np.array([])
+
         plt.ioff()
         plt.figure("YourWindowName", figsize=(15, 10), dpi=50)
         plt.style.use('fivethirtyeight')
@@ -53,8 +55,7 @@ class brightnessDiagramRealtime:
 
     def setarr(self, arr):
         try:
-            for x in range(len(arr)-2, -1, -1):
-                arr[x+1] = arr[x]
+            arr = np.roll(arr, 1)
             return arr
         except:
             print('\033[1;31m Sequence error! Setup must happen first')
@@ -87,15 +88,14 @@ class brightnessDiagramRealtime:
         arr = np.interp(arr, (arr.min(), arr.max()), (-1, +1))
         return arr
 
-    def trueLoop(self, image, counter, smoothed = True, scaling = False, frequency = 1, arr1 = True, arr2 = True, arr3 = True, arr4 = True):
+    def trueLoop(self, counter, image, smoothed = True, scaling = False, frequency = 1, arr1 = True, arr2 = True, arr3 = True, arr4 = True):
+        now = float(datetime.datetime.now().strftime('%S.%f'))
 
-        sec = float(datetime.datetime.now().strftime('%S.%f')) - self.oldtime
-        self.oldtime = float(datetime.datetime.now().strftime('%S.%f'))
-        if frequency == 1:
-            if sec != 0: fps = round(1.0/sec, 1)
-            else: fps = 0
-        else:
-            fps = None
+        sec = now - self.oldtimeF
+        print(sec)
+        self.oldtimeF = float(datetime.datetime.now().strftime('%S.%f'))
+        if sec != 0: fps = round(1.0/sec, 1)
+        else: fps = 0
 
         arrayRow = self.getRowArray(image)
         arrayCol = self.getColArray(image)
@@ -107,16 +107,18 @@ class brightnessDiagramRealtime:
             self.array2 = np.insert(self.array2, 0, comR)
             self.array3 = np.insert(self.array3, 0, comC)
         else:
-            self.array1[0] = round(cv2.mean(np.array(arrayRow))[0])
-            self.array2[0] = comR
-            self.array3[0] = comC
             self.array1 = self.setarr(self.array1)
             self.array2 = self.setarr(self.array2)
             self.array3 = self.setarr(self.array3)
+            self.array1[0] = round(cv2.mean(np.array(arrayRow))[0])
+            self.array2[0] = comR
+            self.array3[0] = comC
 
         array4 = np.array([sum(x) for x in zip(*[self.array1, self.array2, self.array3])])
-
         if counter%frequency == 0:
+            secP = float(datetime.datetime.now().strftime('%S.%f')) - self.oldtimeP
+            self.oldtimeP = float(datetime.datetime.now().strftime('%S.%f'))
+            plotps = round(1.0 / secP, 1)
             if scaling:
                 self.array1 = self.scaleArr(self.array1)
                 self.array2 = self.scaleArr(self.array2)
@@ -138,9 +140,9 @@ class brightnessDiagramRealtime:
             self.array3 = np.around(self.array3, decimals=2)
             array4 = np.around(array4, decimals=2)
 
-            print(self.array1, self.array3, self.array2)
+            #print(self.array1, self.array3, self.array2)
             plt.clf()
-            plt.suptitle('fps: ' + str(fps), fontsize=16)
+            plt.suptitle('fps: ' + str(fps) + ' pps: ' + str(plotps), fontsize=16)
             if arr1:
                 plt.subplot(221)
                 self.setplt(max(self.array1)+buffer, min(self.array1)-buffer, 'Average Brightness/Time', 'Brightness', 'Time')
@@ -156,7 +158,7 @@ class brightnessDiagramRealtime:
                 plt.legend(loc=1, fontsize=15)
             if arr3:
                 plt.subplot(223)
-                self.setplt(350, 0, 'Rows,Cols/Time', 'Rows,Cols', 'Time')
+                self.setplt(350, 0, 'Brightness/Rows,Cols', 'Brightness', 'Rows,Cols')
                 plt.plot(arrayCol, 'y', linewidth=2, label='Col')
                 plt.plot(arrayRow, 'c', linewidth=2, label='Row')
                 plt.legend(loc=1, fontsize=15)
