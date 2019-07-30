@@ -2,7 +2,7 @@ from brightnessDetermining import brightnessDiagramRealtime
 import datetime
 import cv2
 
-bdr = brightnessDiagramRealtime.brightnessDiagramRealtime()
+bdr = brightnessDiagramRealtime.BrightnessDiagramRealtime()
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 time = []

@@ -1,65 +1,20 @@
 from scipy.ndimage.filters import gaussian_filter1d
-import matplotlib
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
 import cv2
 
-class brightnessDiagramRealtime:
+
+class BrightnessDiagramRealtime:
     def __init__(self):
         self.oldtimeF = 0
         self.oldtimeP = 0
         self.array1 = np.array([])
         self.array2 = np.array([])
         self.array3 = np.array([])
-
         plt.ioff()
-        plt.figure("YourWindowName", figsize=(15, 10), dpi=50)
+        plt.figure("YourWindowName", figsize=(15, 12), dpi=50)
         plt.style.use('fivethirtyeight')
-
-    def resize(self, img, percent):
-        scale_percent = percent  # percent of original size
-        width = int(img.shape[1] * scale_percent / 100)
-        height = int(img.shape[0] * scale_percent / 100)
-        dim = (width, height)
-        # resize image
-        resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-        return resized
-
-    def getRowArray(self, img):
-        try:
-            height, width = img.shape[:2]
-            rowArray = []
-            for x in range(height):
-                rowsum = cv2.sumElems(img[x])[0]
-                avgRowbrightness = rowsum/cv2.countNonZero(img[x])
-                rowArray.append(round(avgRowbrightness))
-            return rowArray
-        except:
-            print('\033[1;31m Input error! No image found')
-            exit(0)
-
-    def getColArray(self, img):
-        try:
-            height, width = img.shape[:2]
-            colArray = []
-            for x in range(height):
-                colsum = cv2.sumElems(img[:,x])[0]
-                avgColbrightness = colsum/cv2.countNonZero(img[x])
-                colArray.append(round(avgColbrightness))
-            return colArray
-        except:
-            print('\033[1;31m Input error! No image found')
-            exit(0)
-
-    def setarr(self, arr):
-        try:
-            arr = np.roll(arr, 1)
-            return arr
-        except:
-            print('\033[1;31m Sequence error! Setup must happen first')
-            exit(0)
 
     def setplt(self, scaleT, scaleB, title, yLabel, xLabel):
         plt.ylim(top=scaleT)
@@ -68,48 +23,31 @@ class brightnessDiagramRealtime:
         plt.ylabel(yLabel)
         plt.xlabel(xLabel)
 
-    def getComR(self, arr):
+    def getCenterOfMass(self, arr):
         sum = cv2.sumElems(np.array(arr))[0]
         i = 0
         for x in range(len(arr)):
             i+=arr[x]
             if i >= (sum/2):
                 return x
-
-    def getComC(self, arr):
-        sum = cv2.sumElems(np.array(arr))[0]
-        i = 0
-        for x in range(len(arr)):
-            i+=arr[x]
-            if i >= (sum/2):
-                return x
-
-    def scaleArr(self, arr):
-        arr = np.interp(arr, (arr.min(), arr.max()), (-1, +1))
-        return arr
 
     def trueLoop(self, counter, image, smoothed = True, scaling = False, frequency = 1, arr1 = True, arr2 = True, arr3 = True, arr4 = True):
-        now = float(datetime.datetime.now().strftime('%S.%f'))
-
-        sec = now - self.oldtimeF
-        print(sec)
+        fps = round(1.0/(float(datetime.datetime.now().strftime('%S.%f')) - self.oldtimeF), 1)
         self.oldtimeF = float(datetime.datetime.now().strftime('%S.%f'))
-        if sec != 0: fps = round(1.0/sec, 1)
-        else: fps = 0
 
-        arrayRow = self.getRowArray(image)
-        arrayCol = self.getColArray(image)
+        arrayRow = np.sum(image, axis=1)/(np.count_nonzero(image, axis=1)+1)
+        arrayCol = np.sum(image, axis=0)/(np.count_nonzero(image, axis=0)+1)
 
-        comR = self.getComR(arrayRow)
-        comC = self.getComC(arrayCol)
+        comR = self.getCenterOfMass(arrayRow)
+        comC = self.getCenterOfMass(arrayCol)
         if len(self.array1) < 50:
             self.array1 = np.insert(self.array1, 0, round(cv2.mean(np.array(arrayRow))[0]))
             self.array2 = np.insert(self.array2, 0, comR)
             self.array3 = np.insert(self.array3, 0, comC)
         else:
-            self.array1 = self.setarr(self.array1)
-            self.array2 = self.setarr(self.array2)
-            self.array3 = self.setarr(self.array3)
+            self.array1 = np.roll(self.array1, 1)
+            self.array2 = np.roll(self.array2, 1)
+            self.array3 = np.roll(self.array3, 1)
             self.array1[0] = round(cv2.mean(np.array(arrayRow))[0])
             self.array2[0] = comR
             self.array3[0] = comC
@@ -119,12 +57,18 @@ class brightnessDiagramRealtime:
             secP = float(datetime.datetime.now().strftime('%S.%f')) - self.oldtimeP
             self.oldtimeP = float(datetime.datetime.now().strftime('%S.%f'))
             plotps = round(1.0 / secP, 1)
+
+            array1scal = np.interp(self.array1, (self.array1.min(), self.array1.max()), (-1, +1))
+            array2scal = np.interp(self.array2, (self.array2.min(), self.array2.max()), (-1, +1))
+            array3scal = np.interp(self.array3, (self.array3.min(), self.array3.max()), (-1, +1))
+            array4scal = np.interp(array4, (array4.min(), array4.max()), (-1, +1))
             if scaling:
-                self.array1 = self.scaleArr(self.array1)
-                self.array2 = self.scaleArr(self.array2)
-                self.array3 = self.scaleArr(self.array3)
-                array4 = self.scaleArr(array4)
+                self.array1 = array1scal
+                self.array2 = array2scal
+                self.array3 = array3scal
+                array4 = array4scal
                 buffer = 2
+
             else: buffer = 50
             if smoothed:
                 arrayRow = gaussian_filter1d(arrayRow, sigma=3)
@@ -140,7 +84,7 @@ class brightnessDiagramRealtime:
             self.array3 = np.around(self.array3, decimals=2)
             array4 = np.around(array4, decimals=2)
 
-            #print(self.array1, self.array3, self.array2)
+            # print(self.array1, self.array3, self.array2)
             plt.clf()
             plt.suptitle('fps: ' + str(fps) + ' pps: ' + str(plotps), fontsize=16)
             if arr1:
@@ -166,11 +110,10 @@ class brightnessDiagramRealtime:
                 plt.subplot(224)
                 self.setplt(2, -2, 'Everything/Time', 'Brightness, Cog, Sum', 'Time')
                 plt.xlim(len(array4), 0)
-                plt.plot(self.scaleArr(self.array1), 'r', linewidth=2, label='averg. brightness')
-                plt.plot(self.scaleArr(self.array2), 'c', linewidth=2, label='center of rows')
-                plt.plot(self.scaleArr(self.array3), 'y', linewidth=2, label='center of columns')
-                plt.plot(self.scaleArr(array4), 'k', linewidth=2, label='sum')
+                plt.plot(array1scal, 'r', linewidth=2, label='averg. brightness')
+                plt.plot(array2scal, 'c', linewidth=2, label='center of rows')
+                plt.plot(array3scal, 'y', linewidth=2, label='center of columns')
+                plt.plot(array4scal, 'k', linewidth=2, label='sum')
                 plt.legend(loc=1, fontsize=10)
             plt.draw()
             plt.pause(0.001)
-
