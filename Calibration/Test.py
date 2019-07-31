@@ -3,9 +3,13 @@ from Calibration import StereoCalibration
 from Calibration import MonoCalibration
 import numpy
 import datetime
+
 import matplotlib.pyplot as plt
+
+from brightnessDetermining import breathingDiagramOld as bdr
+
 from ImagingApi import ImagingApi
-from brightnessDetermining import brightnessDiagramRealtime
+
 
 imLeft = cv2.imread("CalibL/imageFrame_0_0.jpg")
 imRight = cv2.imread("CalibR/imageFrame_1_0.jpg")
