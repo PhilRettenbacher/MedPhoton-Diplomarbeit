@@ -6,7 +6,7 @@ import cv2
 import datetime
 
 class BreathingPlotter:
-    def __init__(self, plots, imShape, plotLen = 100, smooth = True, frequency = 1):
+    def __init__(self, plots, imShape, plotLen = 100, smooth = True, frequency = 1, autoscale = True):
         self.imShape = imShape
         self.plotLen = plotLen
         self.calc = BreathingCalculater(imShape, plotLen)
@@ -14,6 +14,7 @@ class BreathingPlotter:
         self.frequency = frequency
         self.counter = 0
         self.smooth = smooth
+        self.autoscale = autoscale
         ylabels = ['Brightness', 'Brightness', 'Brightness', 'Pixelrow', 'Pixelcolumn', 'Sum']
         xlabels = ['Row', 'Column', 'Time', 'Time', 'Time', 'Time']
         titles = ['Brightness/Row', 'Brightness/Column', 'Brightness/Time', 'RowWeight/Time', 'ColumnWeight/Time', 'Sum/Time']
@@ -46,6 +47,8 @@ class BreathingPlotter:
 
         for j, line in enumerate(self.lines):
             array = self.calc.data[self.plots[j].value]
+            if self.autoscale:
+                self.ax[j].set_ylim(min(self.calc.data[self.plots[j].value])-50, max(self.calc.data[self.plots[j].value])+50)
             if self.smooth:
                 array = gaussian_filter1d(array, sigma=1.5)
             line.set_ydata(array)
