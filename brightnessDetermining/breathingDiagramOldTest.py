@@ -1,8 +1,8 @@
-from brightnessDetermining import brightnessDiagramRealtime
+from brightnessDetermining import breathingDiagramOld
 import datetime
 import cv2
 
-bdr = brightnessDiagramRealtime.BrightnessDiagramRealtime()
+bdr = breathingDiagramOld.BrightnessDiagramRealtime()
 
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 time = []

@@ -3,7 +3,7 @@ from Calibration import StereoCalibration
 from Calibration import MonoCalibration
 import numpy
 import datetime
-from brightnessDetermining import brightnessDiagramRealtime as bdr
+from brightnessDetermining import breathingDiagramOld as bdr
 from ImagingApi import ImagingApi
 
 imLeft = cv2.imread("CalibL/imageFrame_0_0.jpg")

@@ -1,5 +1,5 @@
-from brightnessDetermining.breathingDiagram import BreathingPlotter
-from brightnessDetermining.breathingDiagram import BreathPlot
+from brightnessDetermining.breathingDiagramNew import BreathingPlotter
+from brightnessDetermining.breathingDiagramNew import BreathPlot
 import datetime
 import cv2
 
