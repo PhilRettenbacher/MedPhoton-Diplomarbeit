@@ -8,7 +8,7 @@ img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 #cv2.waitKey(0)
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 ret, image = cap.read()
-diagram = BreathingPlotter((BreathPlot.WEIGHT_ROW_TIME, BreathPlot.WEIGHT_COL_TIME, BreathPlot.AVG_BRIGHT_TIME, BreathPlot.SUM_TIME), image.shape, 100)
+diagram = BreathingPlotter((BreathPlot.AVG_BRIGHT_TIME, BreathPlot.SUM_TIME, BreathPlot.WEIGHT_COL_TIME, BreathPlot.WEIGHT_ROW_TIME), image.shape, 100)
 
 while True:
     ret, image = cap.read()
