@@ -5,7 +5,7 @@ import numpy
 import datetime
 
 import matplotlib.pyplot as plt
-
+from brightnessDetermining import breathingDiagramNew
 from brightnessDetermining import breathingDiagramOld as bdr
 
 from ImagingApi import ImagingApi
@@ -92,12 +92,15 @@ cap.keyListener()
 
 minDisp = -16*10
 maxDisp = 16*5
-bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=3000, P1=1500, uniquenessRatio=0, speckleWindowSize=100, speckleRange=16, disp12MaxDiff=64, preFilterCap=3)
+bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=3000, P1=1500, uniquenessRatio=5, speckleWindowSize=100, speckleRange=16, disp12MaxDiff=64, preFilterCap=3)
 
 counter = 0
 sec = 0
 
-bdr = brightnessDiagramRealtime.BrightnessDiagramRealtime()
+bdr = breathingDiagramNew.BreathingPlotter((breathingDiagramNew.BreathPlot.AVG_BRIGHT_ROW,
+                                            breathingDiagramNew.BreathPlot.AVG_BRIGHT_COL,
+                                            breathingDiagramNew.BreathPlot.AVG_BRIGHT_TIME,
+                                            breathingDiagramNew.BreathPlot.SUM_TIME), imLeft.shape, smooth=True, frequency=3)
 while True:
     a = datetime.datetime.now().strftime('%S.%f')
     imLeft, imRight = cap.getFrames()
@@ -118,8 +121,8 @@ while True:
     #disp = cv2.cvtColor(disp, cv2.COLOR_GRAY2RGB)
     #cv2.imshow("overlay", iml.astype("float32")*0.002+disp*0.7)
     # Graphics
-
-    bdr.trueLoop(counter, disp*1000, frequency=1, scaling=False, arr1=True, arr2=True, arr3=True)
+    bdr.update(disp*255)
+    #bdr.trueLoop(counter, disp*1000, frequency=1, scaling=False, arr1=True, arr2=True, arr3=True)
     counter += 1
 
     cv2.imshow("disp", disp)
