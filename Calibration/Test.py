@@ -4,8 +4,8 @@ from Calibration import MonoCalibration
 import numpy
 import datetime
 import matplotlib.pyplot as plt
-from brightnessDetermining import brightnessDiagramRealtime as bdr
 from ImagingApi import ImagingApi
+from brightnessDetermining import brightnessDiagramRealtime
 
 imLeft = cv2.imread("CalibL/imageFrame_0_0.jpg")
 imRight = cv2.imread("CalibR/imageFrame_1_0.jpg")
@@ -59,7 +59,7 @@ cv2.waitKey(0)
 
 
 
-dualCalCount = 30
+dualCalCount = 16
 dualCalStart = 0
 
 #calculate the rectification maps
@@ -89,17 +89,18 @@ cap.keyListener()
 minDisp = -16*10
 maxDisp = 16*5
 bm = cv2.StereoSGBM_create(minDisparity= minDisp, numDisparities=maxDisp-minDisp, blockSize=11, P2=3000, P1=1500, uniquenessRatio=0, speckleWindowSize=100, speckleRange=16, disp12MaxDiff=64, preFilterCap=3)
-bright = bdr.brightnessDiagramRealtime()
 
 counter = 0
 sec = 0
+
+bdr = brightnessDiagramRealtime.BrightnessDiagramRealtime()
 while True:
     a = datetime.datetime.now().strftime('%S.%f')
     imLeft, imRight = cap.getFrames()
 
     #rectify images
-    iml = calib.rectifyImg(calib.undistort(imLeft, True), True)
-    imr = calib.rectifyImg(calib.undistort(imRight, False), False)
+    iml = calib.rectifyImg(imLeft, True)
+    imr = calib.rectifyImg(imRight, False)
 
     cv2.imshow("L", iml)
     cv2.imshow("R", imr)
@@ -108,14 +109,13 @@ while True:
 
     disp = (disp - (minDisp - 1) * 16) / (((maxDisp - minDisp)) * 16)
 
-    disp = disp.astype('float32')
+    #disp = disp.astype('float32')
 
-    disp = cv2.cvtColor(disp, cv2.COLOR_GRAY2RGB)
-    cv2.imshow("overlay", iml.astype("float32")*0.002+disp*0.7)
+    #disp = cv2.cvtColor(disp, cv2.COLOR_GRAY2RGB)
+    #cv2.imshow("overlay", iml.astype("float32")*0.002+disp*0.7)
     # Graphics
 
-    #bright.trueLoop(disp*1000, counter, smoothed=True, scaling=False, arr1=True, arr2=True, arr3=True, arr4=True)
-
+    bdr.trueLoop(counter, disp*1000, frequency=1, scaling=False, arr1=True, arr2=True, arr3=True)
     counter += 1
 
     cv2.imshow("disp", disp)

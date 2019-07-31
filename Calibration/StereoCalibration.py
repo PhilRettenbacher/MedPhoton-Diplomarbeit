@@ -104,10 +104,11 @@ class StereoCalibrator:
         K2 = self.calibR[1]
 
         #calculates the X-shift of the left rectification
-        point = cv2.perspectiveTransform(np.array([[[0., 0.]]]), self.H1)
 
-        #transforms H1 to compensate for the shift
+        point = cv2.perspectiveTransform(np.array([[[0., 0.]]]), self.H1)
         self.H1 = np.array([[1, 0, -point[0, 0, 0]], [0, 1, 0], [0, 0, 1]]).dot(self.H1)
+        #transforms H1 to compensate for the shift
+
         K1_inverse = np.linalg.inv(K1)
         K2_inverse = np.linalg.inv(K2)
         R1 = K1_inverse.dot(self.H1).dot(K1)
@@ -115,11 +116,13 @@ class StereoCalibrator:
 
         # Compute the rectification transform
 
+
+
         newMtx1, roi = cv2.getOptimalNewCameraMatrix(self.calibL[1], self.calibL[2], self.imgSize, 1, centerPrincipalPoint=False)
         newMtx2, roi = cv2.getOptimalNewCameraMatrix(self.calibR[1], self.calibR[2], self.imgSize, 1, centerPrincipalPoint=False)
 
-        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(newMtx1, None, R1, None, self.imgSize, cv2.CV_16SC2)
-        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(newMtx2, None, R2, None, self.imgSize, cv2.CV_16SC2)
+        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(newMtx1, None, R1, newMtx1, self.imgSize, cv2.CV_16SC2)
+        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(newMtx2, None, R2, newMtx2, self.imgSize, cv2.CV_16SC2)
 
     def rectifyImg(self, img, isLeft):
         if(isLeft):
