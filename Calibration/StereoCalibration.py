@@ -20,14 +20,11 @@ class StereoCalibrator:
         self.calibR = calibR
         self.INTERPOLATION = cv2.INTER_LINEAR
 
-        self.internalMonoCal = MonoCalibration.MonoCalibrator(checkerSize, imgShape)
-
+    #calculates the chessboardcorners of corresponding images and saves them.
     def addCheckerBoard(self, imgL, imgR, calibrated, show = False, delay = 1):
         if (not calibrated):
             imgL = self.undistort(imgL, True)
             imgR = self.undistort(imgR, True)
-
-        self.internalMonoCal.addCheckerBoard(imgL)
 
         retL, cornersL = cv2.findChessboardCorners(imgL, self.checkerSize)
         retR, cornersR = cv2.findChessboardCorners(imgR, self.checkerSize)
@@ -60,19 +57,21 @@ class StereoCalibrator:
 
 
     def calibrate(self, shearing=True):
-        self.internalMonoCal.calibrateCamera()
-        calData = self.internalMonoCal.getCalibData()
-        K = calData[1]
-        ##### ##### ##### ##### #####
-        ##### Compute Fundamental matrix
-        ##### ##### ##### ##### #####
-
+        # transform the shape of the points arrays to fit the requirements of cv2.FindFundamentalMat
         x1 = np.array(self.L2DPoints)
         x1 = x1.reshape((x1.shape[0] * x1.shape[1], 1, 2))
 
         x2 = np.array(self.R2DPoints)
         x2 = x2.reshape((x2.shape[0] * x2.shape[1], 1, 2))
 
+        # inputs:
+        #   x1 - Left points
+        #   x2 - Right points
+        #   method = Ransac -> method of finding outliers etc, best method.
+        #   ransacReprojThreshold, confidence -> parameters define when a point is considered an outlier (currently set so a point has to be near perfect to be an inlier)
+        # outputs:
+        #   F - Fundamental matrix
+        #   F_mask - array which indicates which points are inliers and outliers (0 is outlier, 1 inlier)
         F, F_mask = cv2.findFundamentalMat(x1, x2, method=cv2.FM_RANSAC, ransacReprojThreshold=1, confidence=0.99)
 
         # Select only inlier points
@@ -82,18 +81,23 @@ class StereoCalibrator:
 
         # Rectification based on found Fundamental matrix
 
-        #image_shape = (image1.shape[0], image1.shape[1])
-        #(height, width) = image_shape
-        #image_size = (width, height)  # Note: image_size is not image_shape
-
         # Calculate Homogeneous matrix transform given features and fundamental matrix
-
-        retval, self.H1, self.H2 = cv2.stereoRectifyUncalibrated(x1.ravel(), x2.ravel(), F, self.imgSize, threshold=1)
+        # Because of the high camera angle, the normal cv2.stereoRectify function is unusable, because it works best if the cameras are nearly parallel
+        # inputs:
+        #   x1, x2:     left and right points
+        #   F:          Fundamental matrix
+        #   threshold:  parameter um outliers zu filtern
+        # outputs:
+        #   retval:     indicator if the calibration worked
+        #   H1:         Left Homography matrix
+        #   H2:         Right Homography matrix
+        retval, self.H1, self.H2 = cv2.stereoRectifyUncalibrated(x1.ravel(), x2.ravel(), F, self.imgSize, threshold=1) # ravel flattens the array to 1D
 
         if (retval == False):
             print("ERROR: stereoRectifyUncalibrated failed")
             return None
 
+        # stereoRectifyUncalibrated wrongly shears the left image
         # Apply a shearing transform to homography matrices
         if shearing:
             S = self.rectify_shearing(self.H1, self.H2, self.imgSize[0], self.imgSize[1])
@@ -103,27 +107,30 @@ class StereoCalibrator:
         K1 = self.calibL[1]
         K2 = self.calibR[1]
 
-        #calculates the X-shift of the left rectification
+        # With a high camera angel, the rectification algorithm shifts the left image
+        # This is not very predictable, so the image is translated back so the left upper corner stays at X 0
 
+        # calculates the X-shift of the left rectification
+
+        # Look where the point 0 0 ends up after applying rectification transform
         point = cv2.perspectiveTransform(np.array([[[0., 0.]]]), self.H1)
+        # translate the rectification transform by the x value of the point
         self.H1 = np.array([[1, 0, -point[0, 0, 0]], [0, 1, 0], [0, 0, 1]]).dot(self.H1)
-        #transforms H1 to compensate for the shift
 
+        # Compute the actual rectification transform
         K1_inverse = np.linalg.inv(K1)
         K2_inverse = np.linalg.inv(K2)
         R1 = K1_inverse.dot(self.H1).dot(K1)
         R2 = K2_inverse.dot(self.H2).dot(K2)
 
-        # Compute the rectification transform
+        #newMtx1, roi = cv2.getOptimalNewCameraMatrix(self.calibL[1], self.calibL[2], self.imgSize, 1, centerPrincipalPoint=False)
+        #newMtx2, roi = cv2.getOptimalNewCameraMatrix(self.calibR[1], self.calibR[2], self.imgSize, 1, centerPrincipalPoint=False)
 
+        #calculates the rectifying maps
+        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(K1, None, R1, K1, self.imgSize, cv2.CV_16SC2)
+        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(K2, None, R2, K2, self.imgSize, cv2.CV_16SC2)
 
-
-        newMtx1, roi = cv2.getOptimalNewCameraMatrix(self.calibL[1], self.calibL[2], self.imgSize, 1, centerPrincipalPoint=False)
-        newMtx2, roi = cv2.getOptimalNewCameraMatrix(self.calibR[1], self.calibR[2], self.imgSize, 1, centerPrincipalPoint=False)
-
-        self.mapx1, self.mapy1 = cv2.initUndistortRectifyMap(newMtx1, None, R1, newMtx1, self.imgSize, cv2.CV_16SC2)
-        self.mapx2, self.mapy2 = cv2.initUndistortRectifyMap(newMtx2, None, R2, newMtx2, self.imgSize, cv2.CV_16SC2)
-
+    #rectifies given image
     def rectifyImg(self, img, isLeft):
         if(isLeft):
             return(cv2.remap(img, self.mapx1, self.mapy1, interpolation=self.INTERPOLATION, borderMode=cv2.BORDER_CONSTANT))
@@ -228,5 +235,6 @@ class StereoCalibrator:
 
     ##### ##### ##### ##### #####
 
+    #packs caluclation data, used for saving
     def getCalcData(self):
-        return (self.mapx1, self.mapy1, self.mapx2, self.mapy2)
+        return ((self.mapx1, self.mapx2), (self.mapy1, self.mapy2))

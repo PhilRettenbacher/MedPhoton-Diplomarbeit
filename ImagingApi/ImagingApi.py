@@ -217,24 +217,22 @@ class CameraApi:
                     self.caps.append(cap)
         else:
             timeDelta = 0
-            portTestRange = 3
-            start = 1
             print("Looking for devices(web)")
-            for i in range(start, portTestRange):
-                if not (timeDelta > 4):
-                    timestampStart = int(round(time.time()))
-                    cap = (cv2.VideoCapture("http://192.168.199.3:808" + str(i) + "/"))
-                    timeDelta = (int(round(time.time()))) - timestampStart
-                    found, frame = cap.read()
-                    if found:
-                        count += 1
-                        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-                        cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-                        print("Device found on Port " + str(i))
-                        self.caps.append(cap)
-                else:
-                    print("Could not find device(time exceeded)")
-                    return count
+
+            if not (timeDelta > 4):
+                timestampStart = int(round(time.time()))
+                cap1 = (cv2.VideoCapture("http://192.168.199.3:8765/picture/1/current/?_username=admin&_signature=405e3e47c0b54c48c7539decf8437b48bb320e16"))
+                cap2 = (cv2.VideoCapture("http://192.168.199.3:8765/picture/2/current/?_username=admin&_signature=8364b7955ab9bcfe1b2717c91ea1b2d6f2f59a6a"))
+                timeDelta = (int(round(time.time()))) - timestampStart
+                found, frame = cap1.read()
+                found, frame = cap2.read()
+                if found:
+                    self.caps.append(cap1)
+                    self.caps.append(cap2)
+                    count = 2
+            else:
+                print("Could not find device(time exceeded)")
+                return count
         return count
 
 # endProgram simply calls the destructor

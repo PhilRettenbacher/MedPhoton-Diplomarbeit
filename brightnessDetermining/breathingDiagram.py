@@ -48,7 +48,7 @@ class BreathingPlotter:
         for j, line in enumerate(self.lines):
             array = self.calc.data[self.plots[j].value]
             if self.autoscale:
-                self.ax[j].set_ylim(min(self.calc.data[self.plots[j].value])-50, max(self.calc.data[self.plots[j].value])+50)
+                self.ax[j].set_ylim(min(self.calc.data[self.plots[j].value])-10, max(self.calc.data[self.plots[j].value])+10)
             if self.smooth:
                 array = gaussian_filter1d(array, sigma=1.5)
             line.set_ydata(array)
